@@ -1,7 +1,8 @@
 # Highfunction-board
 # 화면 프로토타입
 "https://miro.com/app/live-embed/uXjVLOGVyqc=/?moveToViewport=-3385,476,3684,2241&embedId=936765119147" 
-![image](https://github.com/user-attachments/assets/65cafa72-b288-44f9-8262-d578d5f835a2)
+![image](https://github.com/user-attachments/assets/6b42d7d7-9329-4b13-8e75-b055d92f784d)
+
 
 
 # ERD
