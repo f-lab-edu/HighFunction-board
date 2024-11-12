@@ -1,0 +1,16 @@
+# Default ignored files
+/shelf/
+/workspace.xml
+# Editor-based HTTP Client requests
+/httpRequests/
+# Datasource local storage ignored files
+/dataSources/
+/dataSources.local.xml
+/jarRepositories.xml
+/HighFunction-board.iml
+/misc.xml
+/modules.xml
+/vcs.xml
+/gradle.xml
+/git_toolbox_blame.xml
+/compiler.xml

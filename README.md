@@ -16,3 +16,7 @@ https://drive.google.com/file/d/1t_8oQdFrSiqmynWF31dw1yi0Rg-oOVwv/view?usp=shari
 # 서비스 아키텍처
 
 # 게시판 Flow
+
+# 서버 정보
+- application 서버 주소 : http://175.45.192.108:8081/
+- DB 서버 주소 : 223.130.158.110 / 3306
