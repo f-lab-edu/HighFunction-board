@@ -1,7 +1,8 @@
-package com.main.board.security;
+package com.main.board.config;
 
+import com.main.board.member.Member;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
@@ -9,27 +10,29 @@ import java.util.Collection;
 
 public class CustomUserDetails implements UserDetails {
 
-    private final User user;
+    // security에 user가 아닌 member엔티티를 사용함
+    private final Member member;
 
-    public CustomUserDetails(User user) {
-        this.user = user;
+    public CustomUserDetails(Member member) {
+        this.member = member;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        ArrayList<GrantedAuthority> auth = new ArrayList<GrantedAuthority>();
-        auth.add(new SimpleGrantedAuthority(AUTHORITY));
-        return auth;
+        ArrayList<GrantedAuthority> auth = new ArrayList<GrantedAuthority>(); //ArrayList객체생성
+        auth.add(new SimpleGrantedAuthority("ROLE_USER"));//ROLE_USER권한을 부여
+        return auth; //권한리스트반환
     }
 
     @Override
     public String getPassword() {
-        return user.getPassword();
+        return member.getPassword();
     }
+
 
     @Override
     public String getUsername() {
-        return user.getUsername();
+        return member.getName();
     }
 
     @Override

@@ -1,7 +1,8 @@
-package com.main.board.user.controller;
+package com.main.board.member.controller;
 
-import com.main.board.user.DTO.UserDTO;
-import com.main.board.user.service.UserService;
+import com.main.board.member.DTO.MemberDTO;
+import com.main.board.member.DTO.SignUpResponse;
+import com.main.board.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,16 +11,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
-@RestController("/users")
-public class UserController {
+@RestController("/member")
+public class MemberController {
 
-    private final UserService userService;
+    private final MemberService memberService;
 
 
     @PostMapping("/signup")
-    public ResponseEntity<UserDTO.SignUpResponse> signup(@RequestBody UserDTO userDTO) {
+    public ResponseEntity<SignUpResponse> signup(@RequestBody MemberDTO memberDTO) {
         try {
-            return new ResponseEntity<>(userService.signUp(userDTO), HttpStatus.OK);
+            return new ResponseEntity<>(memberService.signUp(memberDTO), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }

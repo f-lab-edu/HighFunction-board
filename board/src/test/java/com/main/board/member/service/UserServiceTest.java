@@ -1,8 +1,6 @@
-package com.main.board.user.service;
+package com.main.board.member.service;
 
 import org.springframework.boot.test.context.SpringBootTest;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 
