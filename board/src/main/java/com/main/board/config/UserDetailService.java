@@ -3,15 +3,14 @@ package com.main.board.config;
 import com.main.board.member.Member;
 import com.main.board.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+// Spring Security는 해당 객체를 기반으로 인증을 처리한다
 @Service
 @RequiredArgsConstructor
-public class PrincipalDetailsService implements UserDetailsService {
+public class UserDetailService implements UserDetailsService {
 
     private final MemberRepository memberRepository;
 

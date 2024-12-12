@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 
 //PasswordEncoder는 시큐리티에서 비밀번호 암호화를 적용하기위해 상속
 @Component
-public final class Bcrypt implements PasswordEncoder {
+public final class BcryptEncoding implements PasswordEncoder {
 
     /*
     작업팩터 동적할당 (작업팩터는 Bcrypt의 해시작업을 얼마나 복잡하게 할지 결정하는 값이다. 4~31사이의 값이 가능하다)

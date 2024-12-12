@@ -10,7 +10,6 @@ import java.util.Collection;
 
 public class CustomUserDetails implements UserDetails {
 
-    // security에 user가 아닌 member엔티티를 사용함
     private final Member member;
 
     public CustomUserDetails(Member member) {
