@@ -11,12 +11,12 @@ import java.time.LocalDate;
 
 @Getter
 @NoArgsConstructor
-public class MemberDTO {
+public class SignupRequest {
 
     @NotBlank
     private String userId;
     @NotBlank
-    private String password;
+    private String rawPassword;
     @NotBlank
     private String name;
     @NotNull
@@ -24,9 +24,9 @@ public class MemberDTO {
 
 
 
-    public MemberDTO(String userId, String password, String name, LocalDate createDate) {
+    public SignupRequest(String userId, String password, String name, LocalDate createDate) {
         this.userId = validateId(userId);
-        this.password = validatePaswd(password);
+        this.rawPassword = validatePaswd(password);
         this.name = name;
         this.createDate = createDate;
     }

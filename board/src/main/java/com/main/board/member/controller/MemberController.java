@@ -1,6 +1,6 @@
 package com.main.board.member.controller;
 
-import com.main.board.member.DTO.MemberDTO;
+import com.main.board.member.DTO.SignupRequest;
 import com.main.board.member.DTO.SignUpResponse;
 import com.main.board.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -18,9 +18,9 @@ public class MemberController {
 
 
     @PostMapping("/signup")
-    public ResponseEntity<SignUpResponse> signup(@RequestBody MemberDTO memberDTO) {
+    public ResponseEntity<SignUpResponse> signup(@RequestBody SignupRequest signupRequest) {
         try {
-            return new ResponseEntity<>(memberService.signUp(memberDTO), HttpStatus.OK);
+            return new ResponseEntity<>(memberService.signUp(signupRequest), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }

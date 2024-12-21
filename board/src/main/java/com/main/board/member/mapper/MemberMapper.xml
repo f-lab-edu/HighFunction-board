@@ -10,7 +10,7 @@
         VALUES (#{memberId}, #{password}, #{name}, #{createDate});
     </insert>
 
-    <select id="findUserById" parameterType="com.main.board.member.DTO.MemberDTO" resultType="boolean">
+    <select id="findUserById" parameterType="com.main.board.member.DTO.SignupRequest" resultType="boolean">
         SELECT EXISTS (SELECT *
                        FROM member
                        WHERE member_id = #{memberId}
