@@ -19,11 +19,7 @@ public class MemberController {
 
     @PostMapping("/signup")
     public ResponseEntity<SignUpResponse> signup(@RequestBody SignupRequest signupRequest) {
-        try {
-            return new ResponseEntity<>(memberService.signUp(signupRequest), HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+            return ResponseEntity.ok(memberService.signUp(signupRequest));
     }
 
 

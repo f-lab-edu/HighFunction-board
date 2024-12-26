@@ -1,6 +1,6 @@
 package com.main.board.config;
 
-import com.main.board.util.BcryptEncoding;
+import com.main.board.util.PassWordEncoder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -13,8 +13,6 @@ import org.springframework.security.config.annotation.web.configurers.SessionMan
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.AuthenticationFailureHandler;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 @Configuration // 스프링부트에게 이 클래스가 설정파일임을 알려줌 (빈등록)
 @EnableWebSecurity // Spring Security 활성화 기본보안 필터체인이 적용된다
@@ -79,18 +77,7 @@ public class SecurityConfig {
     //해당 방식으로 스프링 시큐리티가 CustomUserDetails 객체에서 반환된 비밀번호와 로그인 요청에서 받은 비밀번호를 비교.
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BcryptEncoding();
+        return new PassWordEncoder();
     }
 
-    //인스턴스 생성
-    @Bean
-    public AuthenticationFailureHandler loginFailHandler() {
-        return new LoginFailHandler();
-    }
-
-    //인스턴스 생성
-    @Bean
-    public AuthenticationSuccessHandler loginSuccessHandler() {
-        return new LoginSuccessHandler();
-    }
 }
