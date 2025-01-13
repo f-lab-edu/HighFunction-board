@@ -13,7 +13,7 @@ public class PassWordEncoder implements PasswordEncoder {
         }
         @Override
         public boolean matches(CharSequence rawPassword, String encodedPassword) {
-            return rawPassword.toString().equals(encodedPassword);
+            return BCrypt.checkpw(rawPassword.toString(),encodedPassword);
         }
 
 

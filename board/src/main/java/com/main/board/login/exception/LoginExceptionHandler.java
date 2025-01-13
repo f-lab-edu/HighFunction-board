@@ -4,6 +4,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -23,15 +25,30 @@ public class LoginExceptionHandler {
      */
 
     //로그인 실패 (비밀번호 불일치) 예외처리
+    // UsernameNotFoundException은 필요없다 (BadCredentialsException로 spring security에서 처리)
     @ExceptionHandler(BadCredentialsException.class)
     public ProblemDetail handleBadCredentialsException(BadCredentialsException e) {
-        return ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다");
+        return ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, "아이디or비밀번호가 일치하지 않습니다");
     }
 
-    //로그인 실패 (아이디 불일치) 예외처리
-    @ExceptionHandler(UsernameNotFoundException.class)
-    public ProblemDetail handleUsernameNotFoundException(UsernameNotFoundException e) {
-        return ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, "아이디를 찾을수없습니다");
+    //유효성 검증 실패 처리
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ProblemDetail handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+        // 첫 번째 오류 메시지 추출
+        FieldError fieldError = e.getBindingResult().getFieldErrors().get(0); // 첫 번째 오류만 처리
+        String field = fieldError.getField();
+        String defaultMessage = fieldError.getDefaultMessage();
+
+        // 이메일 오류
+        if ("email".equals(field)) {
+            return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, defaultMessage);
+        }
+
+        // 비밀번호 오류
+        if ("rawPassword".equals(field)) {
+            return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, defaultMessage);
+        }
+        return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "유효성 검증 실패");
     }
 
 

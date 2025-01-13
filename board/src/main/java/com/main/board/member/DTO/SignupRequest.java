@@ -18,7 +18,7 @@ public class SignupRequest {
     @Pattern(regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$", message = "유효한 이메일 형식이아닙니다")
     private String email;
 
-    @NotEmpty
+    @NotEmpty(message = "비밀번호를 입력해주세요.")
     @Size(min=6, max=20, message = "비밀번호는 6자 이상 20자 이하로 입력해주세요.")
     @Pattern(regexp = "^(?=.*[a-z])(?=.*[0-9])(?=.*[!@#$%^&*]).{8,}$", message = "비밀번호는 소문자,숫자,특수문자 를포함해야 합니다.")
     private String rawPassword;

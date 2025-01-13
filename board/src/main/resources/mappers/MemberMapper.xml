@@ -15,7 +15,7 @@
     </select>
 
     <select id="findMemberByEmail" parameterType="String" resultType="com.main.board.member.Member">
-        SELECT *
+        SELECT email, password
             FROM member
         WHERE email = #{email}
     </select>

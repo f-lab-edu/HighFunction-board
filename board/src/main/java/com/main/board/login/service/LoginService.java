@@ -21,7 +21,7 @@ public class LoginService {
             Spring Security에서 토큰 기반의 인증을 수행하는 객체이다
             Spring Secutiry 내부 에서 사용자 인증 정보를 담기위한 객체이다
              */
-        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(loginRequest.getMemberId(), loginRequest.getRawPassword()); //토큰생성
+        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getRawPassword()); //토큰생성
             /*
             1. authenticationManager가 Provider에게 인증을 위임
             2. config에 설정한 내용대로 UserDetailsService를 통해 유저정보를 가져온다

@@ -48,9 +48,7 @@ public class SignUpExceptionHandler  {
         if ("rawPassword".equals(field)) {
             return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, defaultMessage);
         }
-
-
-        return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "유효성 검증 실패");
+        return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "회원가입 유효성 검증 실패");
     }
 
 }

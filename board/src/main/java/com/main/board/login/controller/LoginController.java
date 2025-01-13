@@ -3,6 +3,7 @@ package com.main.board.login.controller;
 import com.main.board.login.DTO.LoginRequest;
 import com.main.board.login.service.LoginService;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,7 +23,7 @@ public class LoginController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest loginRequest) {
         loginService.login(loginRequest);
         return ResponseEntity.ok("Login successful");
     }
