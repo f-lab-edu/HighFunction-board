@@ -8,5 +8,6 @@ import java.util.Optional;
 @Mapper
 public interface MemberRepository {
     void save(Member member);
-    Optional<Member> findMemberById(String user_id); // DetailsService에서 orElseThrow때문에 Optional사용
+    boolean existsByEmail(String email);
+    Optional<Member> findMemberByEmail(String email); // DetailsService에서 orElseThrow때문에 Optional사용
 }

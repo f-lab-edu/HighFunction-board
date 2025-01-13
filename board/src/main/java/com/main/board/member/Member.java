@@ -12,17 +12,15 @@ import java.time.LocalDateTime;
 public class Member {
 
 
-    private String memberId;
-    private String password;
-    private String name;
-    private LocalDate createDate;
+    private String email;
+    private String encryptPwd;
+    private LocalDateTime createAt;
 
 
-    public Member(String memberId, String password, String name, LocalDate createDate) {
-        this.memberId = memberId;
-        this.password = password;
-        this.name = name;
-        this.createDate = createDate;
+    public Member(String email, String encryptPwd) {
+        this.email = email;
+        this.encryptPwd = encryptPwd;
+        this.createAt = LocalDateTime.now();
     }
 
 

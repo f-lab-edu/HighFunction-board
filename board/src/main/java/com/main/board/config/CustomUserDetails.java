@@ -25,13 +25,13 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public String getPassword() {
-        return member.getPassword();
+        return member.getEncryptPwd();
     }
 
 
     @Override
     public String getUsername() {
-        return member.getName();
+        return member.getEmail();
     }
 
     @Override

@@ -3,6 +3,7 @@ package com.main.board.member.service;
 import com.main.board.member.DTO.SignupRequest;
 import com.main.board.member.DTO.SignUpResponse;
 import com.main.board.member.Member;
+import com.main.board.member.exception.EmailDuplicatedException;
 import com.main.board.member.repository.MemberRepository;
 import com.main.board.util.BcryptEncoder;
 import lombok.RequiredArgsConstructor;
@@ -19,10 +20,14 @@ public class MemberService {
 
     @Transactional
     public SignUpResponse signUp(SignupRequest signupRequest) {
-        String encryptPwd = bcryptEncoder.encrypt(signupRequest.getRawPassword());
-        Member entity = signupRequest.toMemberEntity(encryptPwd);
-        memberRepository.save(entity);
-        return new SignUpResponse(entity);
+            if(memberRepository.existsByEmail(signupRequest.getEmail())) {
+                throw new EmailDuplicatedException("이미 가입된 이메일입니다.");
+            }
+            String encryptPwd = bcryptEncoder.encrypt(signupRequest.getRawPassword());
+            Member entity = signupRequest.toMemberEntity(encryptPwd);
+            memberRepository.save(entity);
+            SignUpResponse response = new SignUpResponse(entity);
+            return response;
     }
 
 }
