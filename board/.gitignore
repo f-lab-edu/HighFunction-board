@@ -40,3 +40,7 @@ out/
 /gradlew
 /gradle/wrapper/gradle-wrapper.properties
 /gradle/wrapper/gradle-wrapper.jar
+
+
+##DB정보##
+/src/main/resources/application-db.properties
