@@ -14,19 +14,22 @@ import org.springframework.security.config.annotation.web.configurers.SessionMan
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration // 스프링부트에게 이 클래스가 설정파일임을 알려줌 (빈등록)
 @EnableWebSecurity // Spring Security 활성화 기본보안 필터체인이 적용된다
 public class SecurityConfig {
 
-    private UserDetailService userDetailsService;
+    private final UserDetailService userDetailsService;
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
-    public SecurityConfig(UserDetailService userDetailsService) {
+    public SecurityConfig(UserDetailService userDetailsService, CustomAuthenticationEntryPoint customAuthenticationEntryPoint) {
         this.userDetailsService = userDetailsService;
+        this.customAuthenticationEntryPoint = customAuthenticationEntryPoint;
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception { //final HttpSecurity http 이점이있는가?
+    public SecurityFilterChain filterChain(HttpSecurity http, CustomUsernamePasswordAuthenticationFilter customUsernamePasswordAuthenticationFilter) throws Exception {
         http
                 .csrf((auth) -> auth.disable()) // csrf 비활성화 (REST API등 비상태 통신에서는 CSRF토큰이 필요하지 않을수있다)
                 .httpBasic((auth) -> auth.disable()) // httpBasic 비활성화
@@ -34,6 +37,13 @@ public class SecurityConfig {
                 .authorizeHttpRequests((auth) -> auth
                                 .requestMatchers("/", "/member/signup", "/auth/login").permitAll() // "/" 경로는 모든 사용자에게 허용
                 .anyRequest().authenticated())
+                .addFilterAt(customUsernamePasswordAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .logout(logout -> logout
+                        .logoutUrl("/auth/logout")
+                        .invalidateHttpSession(true)
+                        .deleteCookies("JSESSIONID")
+                )
+                .exceptionHandling(authenticationEntryPoint -> authenticationEntryPoint.authenticationEntryPoint(customAuthenticationEntryPoint)) // 인증 실패 시 커스텀 EntryPoint 사용
                 .sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED) //세션정책설정 (인증이 필요할때만 생성)
                 /*
@@ -45,8 +55,7 @@ public class SecurityConfig {
                     사용자가 로그인하거나 인증할 때 기존 세션을 폐기하고 새로운 세션을 생성합니다.
                     이로 인해 기존 세션 ID가 무효화되며, 세션 고정 공격을 방지합니다.
                 */
-                .sessionFixation(SessionManagementConfigurer.SessionFixationConfigurer::newSession)//세션고정공격방지
-                .maximumSessions(1) // 동시세션수 제한 (하나의 사용자계정이 유지할수있는 세션의 수를 제한)
+                .sessionFixation(SessionManagementConfigurer.SessionFixationConfigurer::migrateSession)//작성하지않아도되지만 의도를알기위해 작성
                 );
 
         return http.build();

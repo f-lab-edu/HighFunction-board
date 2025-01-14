@@ -2,7 +2,9 @@ package com.main.board.util;
 
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
 
+@Component
 public class PassWordEncoder implements PasswordEncoder {
 
     private static final int WORK_FACTOR = 12;
