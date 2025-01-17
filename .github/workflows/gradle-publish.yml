@@ -47,9 +47,10 @@ jobs:
 
     - name: Deploy to NCP Server # 서버 알고리즘 변경 필요 # 서버에는 공개키 등록하기
       run: |
-        scp -o StrictHostKeyChecking=no board/build/libs/board-0.0.1-SNAPSHOT.jar root@175.45.192.108:/java  
-        ssh -o StrictHostKeyChecking=no root@175.45.192.108 'java -jar /java/board-0.0.1-SNAPSHOT.jar'  # 서버에서 .jar 파일 실행
-
+        # scp 명령어에서 알고리즘을 명시적으로 지정
+        scp -o StrictHostKeyChecking=no -o HostKeyAlgorithms=ssh-ed25519 -o PubkeyAcceptedAlgorithms=ssh-ed25519 board/build/libs/board-0.0.1-SNAPSHOT.jar root@175.45.192.108:/java  
+        # 서버에서 .jar 파일 실행
+        ssh -o StrictHostKeyChecking=no -o HostKeyAlgorithms=ssh-ed25519 -o PubkeyAcceptedAlgorithms=ssh-ed25519 root@175.45.192.108 'java -jar /java/board-0.0.1-SNAPSHOT.jar'
     # The USERNAME and TOKEN need to correspond to the credentials environment variables used in
     # the publishing section of your build.gradle
     - name: Publish to GitHub Packages
