@@ -37,15 +37,6 @@ jobs:
            cd board 
            ./gradlew build 
 
-    - name: Check build directory
-      run: ls -R board/build/libs
-
-    - name: Check build directory
-      run: |
-        ls -R board/build/libs
-        # 또는 find 명령어로 .jar 파일 찾기
-        find . -name "*.jar"
-
     - name: Setup SSH
       uses: webfactory/ssh-agent@v0.5.3
       with:
