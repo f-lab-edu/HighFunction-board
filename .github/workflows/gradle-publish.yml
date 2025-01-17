@@ -53,7 +53,7 @@ jobs:
 
     - name: Deploy to NCP Server
       run: |
-        scp -o StrictHostKeyChecking=no ./build/libs/board-0.0.1-SNAPSHOT.jar root@175.45.192.108:/java  # .jar 파일을 NCP 서버로 복사
+        scp -o StrictHostKeyChecking=no board/build/libs/board-0.0.1-SNAPSHOT.jar root@175.45.192.108:/java  # .jar 파일을 NCP 서버로 복사
         ssh -o StrictHostKeyChecking=no root@175.45.192.108 'java -jar /java/board-0.0.1-SNAPSHOT.jar'  # 서버에서 .jar 파일 실행
 
     # The USERNAME and TOKEN need to correspond to the credentials environment variables used in
