@@ -30,6 +30,9 @@ jobs:
       uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
 
     - name: Debug - List directory
+      run: ls -la
+
+    - name: Debug - List directory
       run: ls -la ./board
 
     - name: Grant execute permission for gradlew
