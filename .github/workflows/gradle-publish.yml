@@ -47,7 +47,7 @@ jobs:
 
     - name: Deploy to NCP Server # 서버 알고리즘 변경 필요 # 서버에는 공개키 등록하기
       run: |
-        # scp 명령어에서 알고리즘을 명시적으로 지정 ㅁㄴㅇ
+        # scp 명령어에서 알고리즘을 명시적으로 지정 ㅁㄴㅇㅇ
         scp -o StrictHostKeyChecking=no -o HostKeyAlgorithms=ssh-ed25519 -o PubkeyAcceptedAlgorithms=ssh-ed25519 board/build/libs/board-0.0.1-SNAPSHOT.jar root@175.45.192.108:/java  
         # 서버에서 .jar 파일 실행
         ssh -o StrictHostKeyChecking=no -o HostKeyAlgorithms=ssh-ed25519 -o PubkeyAcceptedAlgorithms=ssh-ed25519 root@175.45.192.108 'java -jar /java/board-0.0.1-SNAPSHOT.jar'
