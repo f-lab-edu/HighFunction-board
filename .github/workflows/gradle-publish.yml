@@ -38,20 +38,11 @@ jobs:
            ./gradlew build  # Windows에서 gradlew.bat 사용해 빌드
 
     - name: Check build directory
-      run: ls -R ./build/
+      run: ls -R board/build/libs
 
     - name: Check build directory
       run: |
-        ls -R ./build/
-        # 또는 find 명령어로 .jar 파일 찾기
-        find . -name "*.jar"
-
-    - name: Check build directory
-      run: ls -R ./build/libs
-
-    - name: Check build directory
-      run: |
-        ls -R ./build/libs
+        ls -R board/build/libs
         # 또는 find 명령어로 .jar 파일 찾기
         find . -name "*.jar"
 
