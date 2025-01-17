@@ -34,8 +34,8 @@ jobs:
 
     - name: Build with Gradle
       run: |
-           cd board  # 'board' 디렉토리로 이동
-           ./gradlew build  # Windows에서 gradlew.bat 사용해 빌드
+           cd board 
+           ./gradlew build 
 
     - name: Check build directory
       run: ls -R board/build/libs
