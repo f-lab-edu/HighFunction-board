@@ -45,7 +45,7 @@ jobs:
       run: |
           ssh-keyscan -H 175.45.192.108 >> ~/.ssh/known_hosts
 
-    - name: Deploy to NCP Server # 서버 알고리즘 변경
+    - name: Deploy to NCP Server # 서버 알고리즘 변경 필요 # 서버에는 공개키 등록하기
       run: |
         scp -o StrictHostKeyChecking=no board/build/libs/board-0.0.1-SNAPSHOT.jar root@175.45.192.108:/java  
         ssh -o StrictHostKeyChecking=no root@175.45.192.108 'java -jar /java/board-0.0.1-SNAPSHOT.jar'  # 서버에서 .jar 파일 실행
