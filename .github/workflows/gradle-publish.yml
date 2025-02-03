@@ -39,12 +39,13 @@ jobs:
 
     - name: Deploy to NCP Server # 서버 알고리즘 변경 필요 # 서버에는 공개키 등록하기
       run: |
-        sudo apt-get install -y sshpass  # sshpass 설치 (비밀번호 입력 자동화)
-        # 파일 전송 (scp)
-         sshpass -p "${{ secrets.SERVER_PASSWORD }}" scp -o StrictHostKeyChecking=no board/build/libs/board-0.0.1-SNAPSHOT.jar root@175.45.192.108:/java
+        sudo apt-get install -y sshpass  # sshpass 설치
         
-         # 서버에서 .jar 실행 (ssh)
-         sshpass -p "${{ secrets.SERVER_PASSWORD }}" ssh -o StrictHostKeyChecking=no root@175.45.192.108 'java -jar /java/board-0.0.1-SNAPSHOT.jar'   # the publishing section of your build.gradle
+        # 파일 전송 (scp)
+        sshpass -p "${{ secrets.SERVER_PASSWORD }}" scp -o StrictHostKeyChecking=no board/build/libs/board-0.0.1-SNAPSHOT.jar root@175.45.192.108:/java
+        
+        # 서버에서 .jar 실행 (nohup + & 추가)
+        sshpass -p "${{ secrets.SERVER_PASSWORD }}" ssh -o StrictHostKeyChecking=no root@175.45.192.108 'nohup java -jar /java/board-0.0.1-SNAPSHOT.jar > /java/board.log 2>&1 &'
     - name: Publish to GitHub Packages
       run: ./gradlew publish
       env:
