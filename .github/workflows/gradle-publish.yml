@@ -46,8 +46,12 @@ jobs:
         
         # 서버에서 .jar 실행 (nohup + & 추가)
         sshpass -p "${{ secrets.SERVER_PASSWORD }}" ssh -o StrictHostKeyChecking=no root@175.45.192.108 'nohup java -jar /java/board-0.0.1-SNAPSHOT.jar > /java/board.log 2>&1 &'
+
     - name: Publish to GitHub Packages
-      run: ./gradlew publish
+      run: |
+        cd board  # board 디렉터리로 이동
+        chmod +x gradlew  # 실행 권한 부여
+        ./gradlew publish
       env:
         USERNAME: ${{ github.actor }}
         TOKEN: ${{ secrets.GITHUB_TOKEN }}
