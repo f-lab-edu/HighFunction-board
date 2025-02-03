@@ -37,28 +37,14 @@ jobs:
            cd board 
            ./gradlew build 
 
-    - name: Setup SSH
-      uses: webfactory/ssh-agent@v0.5.3
-      with:
-        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}  # GitHub Secrets에 저장한 SSH 개인 키(공개키X)ㅛ
-
     - name: Deploy to NCP Server # 서버 알고리즘 변경 필요 # 서버에는 공개키 등록하기
       run: |
-        # SSH 키를 private_key.pem 파일로 저장
-        echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key.pem
-    
-        # 파일 권한 설정
-        chmod 600 private_key.pem
+        sudo apt-get install -y sshpass  # sshpass 설치 (비밀번호 입력 자동화)
+        # 파일 전송 (scp)
+         sshpass -p "${{ secrets.SERVER_PASSWORD }}" scp -o StrictHostKeyChecking=no board/build/libs/board-0.0.1-SNAPSHOT.jar root@175.45.192.108:/java
         
-        # SCP 명령어로 파일 복사
-        scp -o StrictHostKeyChecking=no -i private_key.pem board/build/libs/board-0.0.1-SNAPSHOT.jar root@175.45.192.108:/java
-        
-        # 서버에서 .jar 파일 실행
-        ssh -o StrictHostKeyChecking=no -i private_key.pem root@175.45.192.108 'java -jar /java/board-0.0.1-SNAPSHOT.jar'
-        
-        # 작업 끝난 후 키 파일 삭제
-        rm private_key.pem    # The USERNAME and TOKEN need to correspond to the credentials environment variables used in
-    # the publishing section of your build.gradle
+         # 서버에서 .jar 실행 (ssh)
+         sshpass -p "${{ secrets.SERVER_PASSWORD }}" ssh -o StrictHostKeyChecking=no root@175.45.192.108 'java -jar /java/board-0.0.1-SNAPSHOT.jar'   # the publishing section of your build.gradle
     - name: Publish to GitHub Packages
       run: ./gradlew publish
       env:
