@@ -6,7 +6,7 @@
 <mapper namespace="com.main.board.mainBoard.repository.MainBoardRepository">
 
 
-    <select id="getMainBoardForOffset" parameterType="com.main.board.mainBoard.DTO.OffsetRequest" resultType="com.main.board.mainBoard.DTO.MainBoardPostResponse">
+    <select id="getMainBoardForOffset" parameterType="com.main.board.mainBoard.DTO.OffsetRequest" resultType="com.main.board.mainBoard.DTO.DB_MainBoardData">
         SELECT p.id AS postId,
                p.title AS postTitle,
                p.viewcount AS viewCount,
@@ -14,20 +14,24 @@
                p.bad_count AS badCount,
                p.created_at AS createdAt,
                m.email,
-               (SELECT COUNT(*) FROM comment c WHERE c.post_id = p.id) AS commentCount
+               COUNT(c.id) AS commentCount
         FROM post p
         JOIN member m ON p.member_id = m.id
+        LEFT JOIN comment c ON c.post_id = p.id
         <where>
             <if test="keyword != null and keyword != ''">
                 AND p.title LIKE CONCAT('%', #{keyword}, '%')
             </if>
         </where>
-        <if test="sort != null">
-            ORDER BY p.id DESC
-        </if>
-        <if test="sort == null">
-            ORDER BY p.id ASC
-        </if>
+        GROUP BY p.id
+        <choose>
+            <when test="sort == 'DESC'">
+                ORDER BY p.id DESC
+            </when>
+            <otherwise>
+                ORDER BY p.id ASC
+            </otherwise>
+        </choose>
         LIMIT #{offset}, #{limit}
     </select>
 
@@ -39,35 +43,46 @@
                like_count AS likeCount,
                bad_count AS badCount,
                created_at AS createdAt
-       FROM post
+       FROM post p
         <where>
             <if test="keyword != null and keyword != ''">
                 AND title LIKE CONCAT('%', #{keyword}, '%')
             </if>
         </where>
-        <if test="sort != null">
-            ORDER BY id DESC
-        </if>
-        <if test="sort == null">
-            ORDER BY id ASC
-        </if>
+        <choose>
+            <when test="sort == 'DESC'">
+                ORDER BY p.id DESC
+            </when>
+            <otherwise>
+                ORDER BY p.id ASC
+            </otherwise>
+        </choose>
        LIMIT #{offset}, #{limit}
     </select>
 
-    <select id="getEmail" parameterType="Long" resultType="com.main.board.mainBoard.DTO.EmailResponse">
-        SELECT m.email
+    <select id="getEmail" parameterType="list" resultType="com.main.board.mainBoard.DTO.DB_Email">
+        SELECT p.id AS postId,
+               m.email
         FROM member m
-                 JOIN post p ON p.member_id = m.id
-        WHERE p.id = #{postId}
+        JOIN post p ON p.member_id = m.id
+        WHERE p.id IN
+        <foreach item="id" collection="list" open="(" separator="," close=")">
+            #{id}
+        </foreach>
     </select>
 
-    <select id="getCommentCount" parameterType="Long" resultType="com.main.board.mainBoard.DTO.CommentCountResponse">
-        SELECT COUNT(*) AS commentCount
+    <select id="getCommentCount" parameterType="list" resultType="com.main.board.mainBoard.DTO.DB_CommentCount">
+        SELECT c.post_id AS postId,
+               COUNT(*) AS commentCount
         FROM comment c
-        WHERE c.post_id = #{postId}
+        WHERE c.post_id IN
+        <foreach item="id" collection="list" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        GROUP BY c.post_id
     </select>
 
-    <select id="getMainBoardForCursor" parameterType="com.main.board.mainBoard.DTO.CursorRequest" resultType="com.main.board.mainBoard.DTO.MainBoardPostResponse">
+    <select id="getMainBoardForCursor" parameterType="com.main.board.mainBoard.DTO.CursorRequest" resultType="com.main.board.mainBoard.DTO.DB_MainBoardData">
         SELECT p.id AS postId,
         p.title AS postTitle,
         p.viewcount AS viewCount,
@@ -75,23 +90,43 @@
         p.bad_count AS badCount,
         p.created_at AS createdAt,
         m.email,
-        (SELECT COUNT(*) FROM comment c WHERE c.post_id = p.id) AS commentCount
+        COUNT(c.id) AS commentCount
         FROM post p
         JOIN member m ON p.member_id = m.id
+        LEFT JOIN comment c ON c.post_id = p.id
         <where>
+            <!-- 커서 ID 조건 -->
             <if test="cursorId != null">
-                 AND p.id > #{cursorId}
+                <choose>
+                    <when test="sort == 'ASC'">
+                        AND p.id > #{cursorId}
+                    </when>
+                    <when test="sort == 'DESC'">
+                        AND p.id <![CDATA[<]]> #{cursorId}
+                    </when>
+                    <otherwise>
+                        AND p.id > #{cursorId}
+                    </otherwise>
+                </choose>
             </if>
+
             <if test="keyword != null and keyword != ''">
-                 AND p.title LIKE CONCAT('%', #{keyword}, '%')
+                AND p.title LIKE CONCAT('%', #{keyword}, '%')
             </if>
         </where>
-        <if test="sort != null">
-            ORDER BY p.id DESC
-        </if>
-        <if test="sort == null">
-            ORDER BY p.id ASC
-        </if>
+        GROUP BY p.id
+        <!-- 정렬 조건 -->
+        <choose>
+            <when test="sort == 'ASC'">
+                ORDER BY p.id ASC
+            </when>
+            <when test="sort == 'DESC'">
+                ORDER BY p.id DESC
+            </when>
+            <otherwise>
+                ORDER BY p.id ASC
+            </otherwise>
+        </choose>
         LIMIT #{limit}
     </select>
 

@@ -18,4 +18,15 @@ public class MainBoardPostResponse {
     private LocalDateTime createdAt;
     private String email; //작성자 명
     private Long commentCount;
+
+    public MainBoardPostResponse(DB_MainBoardData data) {
+        this.postId = data.getPostId();
+        this.postTitle = data.getPostTitle();
+        this.viewCount = data.getViewCount();
+        this.likeCount = data.getLikeCount();
+        this.badCount = data.getBadCount();
+        this.createdAt = data.getCreatedAt();
+        this.email = data.getEmail();
+        this.commentCount = data.getCommentCount();
+    }
 }

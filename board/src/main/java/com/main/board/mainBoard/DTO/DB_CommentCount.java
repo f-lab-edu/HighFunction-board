@@ -5,10 +5,8 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class CommentCountResponse {
+public class DB_CommentCount {
+    private Long postId;
     private Long commentCount;
 
-    public CommentCountResponse(Long count) {
-        this.commentCount = count;
-    }
 }

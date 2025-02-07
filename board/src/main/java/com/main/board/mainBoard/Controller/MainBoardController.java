@@ -28,8 +28,7 @@ public class MainBoardController {
                                              @RequestParam(required = false) Long page,
                                              @RequestParam(required = false) String keyword,
                                              @RequestParam(required = false) String sort) {
-        Long offset = (page != null && limit != null) ? (page - 1) * limit : 0;
-        OffsetRequest offsetRequest = new OffsetRequest(limit, page, offset, keyword, sort);
+        OffsetRequest offsetRequest = new OffsetRequest(limit, page, keyword, sort);
         List<MainBoardPostResponse> mainBoardPostResponsesList = mainBoardService.getMainBoardForOffset(offsetRequest);
         return mainBoardPostResponsesList;
     }
@@ -39,22 +38,19 @@ public class MainBoardController {
                                                              @RequestParam(required = false) Long page,
                                                              @RequestParam(required = false) String keyword,
                                                              @RequestParam(required = false) String sort) {
-        Long offset = (page != null && limit != null) ? (page - 1) * limit : 0;
-        OffsetRequest offsetRequest = new OffsetRequest(limit, page, offset, keyword, sort);
+        OffsetRequest offsetRequest = new OffsetRequest(limit, page, keyword, sort);
         List<MainBoardPostResponse> mainBoardPostResponsesList = mainBoardService.getMainBoardForOffsetMK2(offsetRequest);
         return mainBoardPostResponsesList;
     }
 
 
     @GetMapping("/cursor")
-    public List<MainBoardPostResponse> getMainBoardForCursor(@RequestParam(required = false) Optional<Long> limit,
+    public List<MainBoardPostResponse> getMainBoardForCursor(@RequestParam Long limit,
                                                              @RequestParam(required = false) Long cursorId,
                                                              @RequestParam(required = false) String keyword,
                                                              @RequestParam(required = false) String sort) {
-        //Optional써보기 - limit 값이 없으면 예외를 던진다. (개발자에게 null처리를 위함이므로 외부에서 먼저 처리해버리기)
-        Long NotNullLimit = limit.orElseThrow(() -> new IllegalArgumentException("cursor limit은 필수값입니다."));
 
-        CursorRequest cursorRequest = new CursorRequest(NotNullLimit, cursorId, keyword, sort);
+        CursorRequest cursorRequest = new CursorRequest(limit, cursorId, keyword, sort);
         List<MainBoardPostResponse> mainBoardPostResponsesList = mainBoardService.getMainBoardForCursor(cursorRequest);
         return mainBoardPostResponsesList;
     }
