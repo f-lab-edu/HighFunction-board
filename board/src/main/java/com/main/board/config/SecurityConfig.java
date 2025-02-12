@@ -35,7 +35,7 @@ public class SecurityConfig {
                 .httpBasic((auth) -> auth.disable()) // httpBasic 비활성화
                 .formLogin((auth) -> auth.disable()) // formLogin 비활성화
                 .authorizeHttpRequests((auth) -> auth
-                                .requestMatchers("/", "/member/signup", "/auth/login").permitAll() // "/" 경로는 모든 사용자에게 허용
+                                .requestMatchers("/", "/member/signup", "/auth/login", "/mainBoard/**").permitAll() // "/" 경로는 모든 사용자에게 허용
                 .anyRequest().authenticated())
                 .addFilterAt(customUsernamePasswordAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .logout(logout -> logout
