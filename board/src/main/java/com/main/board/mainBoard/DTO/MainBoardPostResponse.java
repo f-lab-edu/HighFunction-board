@@ -19,7 +19,7 @@ public class MainBoardPostResponse {
     private String email; //작성자 명
     private Long commentCount;
 
-    public MainBoardPostResponse(DB_MainBoardData data) {
+    public MainBoardPostResponse(MainBoardDataFromDB data) {
         this.postId = data.getPostId();
         this.postTitle = data.getPostTitle();
         this.viewCount = data.getViewCount();

@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
-public class DB_MainBoardData {
+public class MainBoardDataFromDB {
     private Long postId;
     private String postTitle;
     private Long viewCount;

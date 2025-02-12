@@ -6,7 +6,7 @@
 <mapper namespace="com.main.board.mainBoard.repository.MainBoardRepository">
 
 
-    <select id="getMainBoardForOffset" parameterType="com.main.board.mainBoard.DTO.OffsetRequest" resultType="com.main.board.mainBoard.DTO.DB_MainBoardData">
+    <select id="getMainBoardForOffset" parameterType="com.main.board.mainBoard.DTO.OffsetRequest" resultType="com.main.board.mainBoard.DTO.MainBoardDataFromDB">
         SELECT p.id AS postId,
                p.title AS postTitle,
                p.viewcount AS viewCount,
@@ -60,7 +60,7 @@
        LIMIT #{offset}, #{limit}
     </select>
 
-    <select id="getEmail" parameterType="list" resultType="com.main.board.mainBoard.DTO.DB_Email">
+    <select id="getEmail" parameterType="list" resultType="com.main.board.mainBoard.DTO.EmailFromDB">
         SELECT p.id AS postId,
                m.email
         FROM member m
@@ -71,7 +71,7 @@
         </foreach>
     </select>
 
-    <select id="getCommentCount" parameterType="list" resultType="com.main.board.mainBoard.DTO.DB_CommentCount">
+    <select id="getCommentCount" parameterType="list" resultType="com.main.board.mainBoard.DTO.CommentCountFromDB">
         SELECT c.post_id AS postId,
                COUNT(*) AS commentCount
         FROM comment c
@@ -82,7 +82,7 @@
         GROUP BY c.post_id
     </select>
 
-    <select id="getMainBoardForCursor" parameterType="com.main.board.mainBoard.DTO.CursorRequest" resultType="com.main.board.mainBoard.DTO.DB_MainBoardData">
+    <select id="getMainBoardForCursor" parameterType="com.main.board.mainBoard.DTO.CursorRequest" resultType="com.main.board.mainBoard.DTO.MainBoardDataFromDB">
         SELECT p.id AS postId,
         p.title AS postTitle,
         p.viewcount AS viewCount,

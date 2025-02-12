@@ -20,13 +20,13 @@ public class MainBoardService {
 
     //단순조회니깐 트랜잭션은 걸지않아도 된다 라고 생각함
     public List<MainBoardPostResponse> getMainBoardForOffset(OffsetRequest offsetRequest) {
-        List<DB_MainBoardData> postDbData = mainBoardRepository.getMainBoardForOffset(offsetRequest);
+        List<MainBoardDataFromDB> postDbData = mainBoardRepository.getMainBoardForOffset(offsetRequest);
 
         List<MainBoardPostResponse> mainBoardPostResponsesList = new ArrayList<>();
 
-        for (DB_MainBoardData data : postDbData) {
-            mainBoardPostResponsesList.add(new MainBoardPostResponse(data)); // 변환 과정 필요
-        }
+        mainBoardPostResponsesList = postDbData.stream()
+                .map(MainBoardPostResponse::new)
+                .collect(Collectors.toList());
 
         return mainBoardPostResponsesList;
     }
@@ -49,15 +49,15 @@ public class MainBoardService {
                                  .toList(); // -> immutable하기에 .collect(Collectors.toList()); 대신 사용 (mutable해서 미사용)
 
         //3. 이메일, 댓글수 조회하기
-        List<DB_CommentCount> commentCountOfDB = mainBoardRepository.getCommentCount(boardIdList);
-        List<DB_Email> emailsOfDB = mainBoardRepository.getEmail(boardIdList);
+        List<CommentCountFromDB> commentCountOfDB = mainBoardRepository.getCommentCount(boardIdList);
+        List<EmailFromDB> emailsOfDB = mainBoardRepository.getEmail(boardIdList);
 
         //4. 데이터를 삽입하기 위해서 Map은 get사용시 O(1)이기에 사용 (데이터가 많아지면 성능차이가 날수있음)
         Map<Long, Long> commentCountMap = commentCountOfDB.stream()
-                .collect(Collectors.toMap(DB_CommentCount::getPostId, DB_CommentCount::getCommentCount));
+                .collect(Collectors.toMap(CommentCountFromDB::getPostId, CommentCountFromDB::getCommentCount));
 
         Map<Long, String> emailMap = emailsOfDB.stream()
-                .collect(Collectors.toMap(DB_Email::getPostId, DB_Email::getEmail));
+                .collect(Collectors.toMap(EmailFromDB::getPostId, EmailFromDB::getEmail));
 
         //5. retrun 객체 생성
         List<MainBoardPostResponse> mainBoardPostResponsesListMK2 = new ArrayList<>();
@@ -85,7 +85,7 @@ public class MainBoardService {
     }
 
     public List<MainBoardPostResponse> getMainBoardForCursor(CursorRequest cursorRequest) {
-        List<DB_MainBoardData> postDbData = mainBoardRepository.getMainBoardForCursor(cursorRequest);
+        List<MainBoardDataFromDB> postDbData = mainBoardRepository.getMainBoardForCursor(cursorRequest);
 
         List<MainBoardPostResponse> mainBoardPostResponsesList = new ArrayList<>();
 
@@ -95,7 +95,7 @@ public class MainBoardService {
         추가적으로 List 크기 Limit값 만큼 사이즈 지정하기
         뭐가 효율적일것인가?
          */
-        for (DB_MainBoardData data : postDbData) {
+        for (MainBoardDataFromDB data : postDbData) {
             System.out.println("Data class: " + data.getClass().getName());
             mainBoardPostResponsesList.add(new MainBoardPostResponse(data)); // 변환 과정 필요
         }

@@ -5,7 +5,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class DB_CommentCount {
+public class CommentCountFromDB {
     private Long postId;
     private Long commentCount;
 

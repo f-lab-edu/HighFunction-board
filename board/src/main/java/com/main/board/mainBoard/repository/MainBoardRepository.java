@@ -8,12 +8,12 @@ import java.util.List;
 @Mapper
 public interface MainBoardRepository {
     // 서브쿼리는 지양하는게 맞다
-    List<DB_MainBoardData> getMainBoardForOffset(OffsetRequest offsetRequest);
+    List<MainBoardDataFromDB> getMainBoardForOffset(OffsetRequest offsetRequest);
     //버전2 쿼리 쪼개서 조합해보기
     List<PostResponse> getPost(OffsetRequest offsetRequest);
-    List<DB_Email> getEmail(List boardIdList);
-    List<DB_CommentCount> getCommentCount(List boardIdList);
+    List<EmailFromDB> getEmail(List boardIdList);
+    List<CommentCountFromDB> getCommentCount(List boardIdList);
 
 
-    List<DB_MainBoardData> getMainBoardForCursor(CursorRequest cursorRequest);
+    List<MainBoardDataFromDB> getMainBoardForCursor(CursorRequest cursorRequest);
 }
