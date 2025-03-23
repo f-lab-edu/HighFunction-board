@@ -34,11 +34,9 @@ public class SecurityConfig {
                 .csrf((auth) -> auth.disable()) // csrf 비활성화 (REST API등 비상태 통신에서는 CSRF토큰이 필요하지 않을수있다)
                 .httpBasic((auth) -> auth.disable()) // httpBasic 비활성화
                 .formLogin((auth) -> auth.disable()) // formLogin 비활성화
-                //.authorizeHttpRequests((auth) -> auth
-                //                .requestMatchers("/**", "/member/signup", "/auth/login", "/mainBoard/**", "/post/**").permitAll() // "/" 경로는 모든 사용자에게 허용
-                //                .anyRequest().authenticated())
                 .authorizeHttpRequests((auth) -> auth
-                        .anyRequest().permitAll())
+                                .requestMatchers("/**", "/member/signup", "/auth/login", "/mainBoard/**", "/post/**").permitAll() // "/" 경로는 모든 사용자에게 허용
+                                .anyRequest().authenticated())
                 .addFilterAt(customUsernamePasswordAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .logout(logout -> logout
                         .logoutUrl("/auth/logout")
