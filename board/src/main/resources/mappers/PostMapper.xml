@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.main.board.post.repository.PostRepository">
+
+    <select id="getPostDetail" parameterType="Long" resultType="com.main.board.post.DTO.PostDetailFromDB">
+        SELECT
+            p.id AS postId,
+            p.title AS postTitle,
+            p.content AS postContent,
+            p.viewcount AS viewCount,
+            p.like_count AS likeCount,
+            p.bad_count AS badCount,
+            p.created_at AS createdAt,
+            m.email,
+            SUM(CASE WHEN c.parent_id IS NULL THEN 1 ELSE 0 END) AS commentCount
+        FROM post p
+        JOIN member m ON p.member_id = m.id
+        LEFT JOIN comment c ON p.id = c.post_id
+        where p.id = #{postId}
+        GROUP BY p.id
+    </select>
+
+    <select id="getCommentList" parameterType="Long" resultType="com.main.board.post.DTO.CommentDetailFromDB">
+        SELECT
+            c.id AS commentId,
+            c.comment_content AS commentContent,
+            c.create_at AS createdAt,
+            m.email
+        FROM comment c
+        JOIN member m ON c.member_id = m.id
+        WHERE c.post_id = #{postId}
+        AND c.parent_id IS NULL
+    </select>
+
+    <select id="getChildCommentList" parameterType="Long" resultType="com.main.board.post.DTO.ChildCommentFromDB">
+        SELECT
+            child.id AS childCommentId,
+            child.comment_content AS childCommentContent,
+            child.create_at AS createdAt,
+            child.comment_like AS likeCount,
+            m.email
+        FROM comment child
+                 JOIN comment c2 ON child.parent_id = c2.id
+                 JOIN member m ON child.member_id = m.id
+        WHERE child.parent_id = #{commentId}
+    </select>
+
+
+
+
+</mapper>
