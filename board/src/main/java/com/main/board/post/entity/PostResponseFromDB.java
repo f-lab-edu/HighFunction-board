@@ -1,4 +1,4 @@
-package com.main.board.post.DTO;
+package com.main.board.post.entity;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,14 +9,15 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
-public class PostDetailFromDB {
+public class PostResponseFromDB {
+
     private long postId;
     private String postTitle;
     private String postContent;
     private long viewCount;
     private long likeCount;
     private long badCount;
-    private LocalDateTime createdAt;
     private String authorEmail;
-    private long commentCount;
+    private Long commentCount;
+    private LocalDateTime createdAt;
 }

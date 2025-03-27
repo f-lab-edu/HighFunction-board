@@ -12,10 +12,12 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 public class CommentDetailFromDB {
-    private Long commentId;
+    private long commentId;
     private String commentContent;
-    private Long likeCount;
+    private long likeCount;
     private LocalDateTime createdAt;
     private String email;
-    private List<ChildCommentFromDB> childCommentList;
+    private Long parentId;
+    private boolean hasChild;
+    private List<CommentDetailFromDB> childCommentList;
 }

@@ -19,9 +19,8 @@ public class PostDetailResponse {
     private Long likeCount;
     private Long badCount;
     private LocalDateTime createdAt;
-    private String email;
+    private String authorEmail;
     private List<CommentDetailFromDB> commentList;
-
 
     public void settingResponse(PostDetailFromDB postDetailList, List<CommentDetailFromDB> commentList) {
         this.setPostId(postDetailList.getPostId());
@@ -30,7 +29,7 @@ public class PostDetailResponse {
         this.setLikeCount(postDetailList.getLikeCount());
         this.setBadCount(postDetailList.getBadCount());
         this.setCreatedAt(postDetailList.getCreatedAt());
-        this.setEmail(postDetailList.getEmail());
+        this.setAuthorEmail(postDetailList.getAuthorEmail());
         this.setCommentList(commentList);
     }
 
