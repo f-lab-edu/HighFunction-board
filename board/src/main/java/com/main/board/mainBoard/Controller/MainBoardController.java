@@ -34,7 +34,7 @@ public class MainBoardController {
     }
 
     @GetMapping("/offset_MK2")
-    public List<MainBoardPostResponse> getMainBoardForOffset_MK2(@RequestParam(required = false) Long limit,
+    public List<MainBoardPostResponse> getMainBoardForOffset_MK2(@RequestParam(required = true) Long limit,
                                                              @RequestParam(required = false) Long page,
                                                              @RequestParam(required = false) String keyword,
                                                              @RequestParam(required = false) String sort) {
