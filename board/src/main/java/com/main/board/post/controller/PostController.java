@@ -2,8 +2,6 @@ package com.main.board.post.controller;
 
 import com.main.board.post.DTO.MoreCommentResponse;
 import com.main.board.post.DTO.PostDetailResponse;
-import com.main.board.post.entity.Post;
-import com.main.board.post.entity.PostResponse;
 import com.main.board.post.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -73,20 +71,5 @@ public class PostController {
     }
     //recursive 방식 끝
 
-    //JPQL 방식
-    @GetMapping("/jpa/{postId}")
-    public PostResponse getJpaPostDetail(@PathVariable long postId,
-                                         @RequestParam(required = false, defaultValue = "0") int page) {
-        long offset = page != 0 ? (page - 1) * 10 : 0;
-        return postService.getJpaPostDetail(postId, offset);
-    }
-
-    //Querydsl 방식
-    @GetMapping("/qdsl/{postId}")
-    public PostResponse getQdslPostDetail(@PathVariable long postId,
-                                         @RequestParam(required = false, defaultValue = "0") int page) {
-        long offset = page != 0 ? (page - 1) * 10 : 0;
-        return postService.getQdslPostDetail(postId, offset);
-    }
 
 }
