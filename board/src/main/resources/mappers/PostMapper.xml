@@ -181,5 +181,10 @@
         LIMIT #{offset}, 10
     </select>
 
+    <select id="createPost" parameterType="com.main.board.post.DTO.CreatePostRequest">
+        INSERT INTO post (title, content, member_id, created_at)
+        VALUES (#{postTitle}, #{postContent}, #{memberId}, now())
+    </select>
+
 
 </mapper>

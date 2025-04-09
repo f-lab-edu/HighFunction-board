@@ -1,9 +1,6 @@
 package com.main.board.post.service;
 
-import com.main.board.post.DTO.CommentDetailFromDB;
-import com.main.board.post.DTO.MoreCommentResponse;
-import com.main.board.post.DTO.PostDetailFromDB;
-import com.main.board.post.DTO.PostDetailResponse;
+import com.main.board.post.DTO.*;
 import com.main.board.post.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -114,4 +111,9 @@ public class PostService {
     }
     //recursive 방식 끝
 
+    public void createPost(CreatePostRequest createPostRequest) {
+        postRepository.createPost(createPostRequest);
+
+
+    }
 }

@@ -1,9 +1,13 @@
 package com.main.board.post.controller;
 
+import com.main.board.post.DTO.CreatePostRequest;
 import com.main.board.post.DTO.MoreCommentResponse;
 import com.main.board.post.DTO.PostDetailResponse;
 import com.main.board.post.service.PostService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -71,5 +75,12 @@ public class PostController {
     }
     //recursive 방식 끝
 
+
+    //게시물 생성
+    @PostMapping("createpost")
+    public ResponseEntity<String> createPost(@RequestBody @Valid CreatePostRequest createPostRequest) {
+                postService.createPost(createPostRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).body("게시물이 성공적으로 생성되었습니다!");
+    }
 
 }

@@ -1,6 +1,7 @@
 package com.main.board.post.repository;
 
 import com.main.board.post.DTO.CommentDetailFromDB;
+import com.main.board.post.DTO.CreatePostRequest;
 import com.main.board.post.DTO.PostDetailFromDB;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -21,6 +22,8 @@ public interface PostRepository {
     List<CommentDetailFromDB> getRecursiveCommentList(long postId, long offset);
     List<CommentDetailFromDB> getRecursiveMoreCommentList(long commentId, long offset);
 
+    //게시물 작성 ceate
+    void createPost(CreatePostRequest createPostRequest);
 
 
 
