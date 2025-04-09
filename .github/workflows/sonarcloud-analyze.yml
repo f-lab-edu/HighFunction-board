@@ -32,8 +32,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.SECRET_GITHUB_BOT }}
           SONAR_TOKEN: ${{ secrets.SECRET_SONARQUBE }}
         with:
-          args:
-            -Dsonar.projectKey=${{ env.SONAR_PROJECT_KEY }}
-            -Dsonar.organization=f-lab-edu-1
+          args: |
+            -Dsonar.projectKey=${{ env.SONAR_PROJECT_KEY }} -Dsonar.organization=f-lab-edu-1
 
           
