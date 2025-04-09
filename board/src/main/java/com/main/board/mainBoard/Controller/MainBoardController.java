@@ -5,6 +5,7 @@ import com.main.board.mainBoard.DTO.MainBoardPostResponse;
 import com.main.board.mainBoard.DTO.OffsetRequest;
 import com.main.board.mainBoard.service.MainBoardService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -53,5 +54,14 @@ public class MainBoardController {
         CursorRequest cursorRequest = new CursorRequest(limit, cursorId, keyword, sort);
         List<MainBoardPostResponse> mainBoardPostResponsesList = mainBoardService.getMainBoardForCursor(cursorRequest);
         return mainBoardPostResponsesList;
+    }
+
+    @GetMapping("/main")
+    public String showBoard(Model model) {
+        List<MainBoardPostResponse> posts = mainBoardService.getMainBoardForCursor(
+                new CursorRequest(10L, null, null, "DESC")
+        );
+        model.addAttribute("posts", posts);
+        return "index"; // templates/index.html 열림
     }
 }
