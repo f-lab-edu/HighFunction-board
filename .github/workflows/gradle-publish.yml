@@ -34,8 +34,9 @@ jobs:
 
     - name: Build with Gradle
       run: |
-           cd board 
-           ./gradlew build 
+            cd board
+            chmod +x ./gradlew
+            ./gradlew build
 
     - name: Deploy to NCP Server # 서버 알고리즘 변경 필요 # 서버에는 공개키 등록하기
       run: |
