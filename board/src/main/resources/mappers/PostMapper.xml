@@ -186,5 +186,24 @@
         VALUES (#{postTitle}, #{postContent}, #{memberId}, now())
     </select>
 
+    <select id="updatePost" parameterType="com.main.board.post.DTO.UpdatePostRequest">
+        UPDATE post
+        SET title = #{postTitle},
+            content = #{postContent},
+            update_at = now()
+        WHERE id = #{postId}
+    </select>
+
+    <select id="deletePost" parameterType="com.main.board.post.DTO.DeletePostRequest">
+        DELETE FROM post
+        WHERE id = #{postId}
+    </select>
+
+    <select id="selectPostForMember" resultType="boolean" parameterType="long">
+        SELECT EXISTS(SELECT 1
+                        FROM post
+                       WHERE member_id = #{memberId}
+                         AND id = #{postId})
+    </select>
 
 </mapper>

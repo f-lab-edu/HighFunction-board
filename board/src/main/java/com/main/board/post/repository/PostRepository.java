@@ -1,8 +1,6 @@
 package com.main.board.post.repository;
 
-import com.main.board.post.DTO.CommentDetailFromDB;
-import com.main.board.post.DTO.CreatePostRequest;
-import com.main.board.post.DTO.PostDetailFromDB;
+import com.main.board.post.DTO.*;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -24,6 +22,12 @@ public interface PostRepository {
 
     //게시물 작성 ceate
     void createPost(CreatePostRequest createPostRequest);
+    //게시물 수정 update
+    void updatePost(UpdatePostRequest updatePostRequest);
+    //게시물 삭제 delete
+    void deletePost(DeletePostRequest deletePostRequest);
+    //해당 유저가 작성한 게시글인지 확인
+    boolean selectPostForMember(long postId, long memberId);
 
 
 

@@ -1,8 +1,6 @@
 package com.main.board.post.controller;
 
-import com.main.board.post.DTO.CreatePostRequest;
-import com.main.board.post.DTO.MoreCommentResponse;
-import com.main.board.post.DTO.PostDetailResponse;
+import com.main.board.post.DTO.*;
 import com.main.board.post.service.PostService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -81,6 +79,18 @@ public class PostController {
     public ResponseEntity<String> createPost(@RequestBody @Valid CreatePostRequest createPostRequest) {
                 postService.createPost(createPostRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body("게시물이 성공적으로 생성되었습니다!");
+    }
+
+    @PostMapping("updatepost")
+    public ResponseEntity<String> updatePost(@RequestBody @Valid UpdatePostRequest updatePostRequest) {
+        postService.updatePost(updatePostRequest);
+        return ResponseEntity.status(HttpStatus.OK).body("게시물이 성공적으로 수정되었습니다!");
+    }
+
+    @PostMapping("deletepost")
+    public ResponseEntity<String> deletePost(@RequestBody @Valid DeletePostRequest deletePostRequest) {
+        postService.deletePost(deletePostRequest);
+        return ResponseEntity.status(HttpStatus.OK).body("게시물이 성공적으로 삭제되었습니다!");
     }
 
 }

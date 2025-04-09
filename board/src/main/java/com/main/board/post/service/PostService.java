@@ -113,7 +113,21 @@ public class PostService {
 
     public void createPost(CreatePostRequest createPostRequest) {
         postRepository.createPost(createPostRequest);
+    }
 
+    public void updatePost(UpdatePostRequest updatePostRequest) {
+        boolean checkOwner = postRepository.selectPostForMember(updatePostRequest.getPostId(), updatePostRequest.getMemberId());
+        if(!checkOwner) {
+            throw new IllegalArgumentException("게시물 작성자가 아닙니다.");
+        }
+        postRepository.updatePost(updatePostRequest);
+    }
 
+    public void deletePost(DeletePostRequest deletePostRequest) {
+        boolean checkOwner = postRepository.selectPostForMember(deletePostRequest.getPostId(), deletePostRequest.getMemberId());
+        if(!checkOwner) {
+            throw new IllegalArgumentException("게시물 작성자가 아닙니다.");
+        }
+        postRepository.deletePost(deletePostRequest);
     }
 }
