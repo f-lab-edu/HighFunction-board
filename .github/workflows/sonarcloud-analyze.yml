@@ -39,14 +39,14 @@ jobs:
           echo "SONAR_PROJECT_KEY=$SONAR_PROJECT_KEY" >> $GITHUB_ENV 
 
       - name: Analyze with SonarCloud
-        uses: SonarSource/sonarqube-scan-action@v5.0.0
+        uses: SonarSource/sonarcloud-github-action@v2.1.1
         id: analyze-sonarcloud
         continue-on-error: true
         env:
           GITHUB_TOKEN: ${{ secrets.SECRET_GITHUB_BOT }}
           SONAR_TOKEN: ${{ secrets.SECRET_SONARQUBE }}
         with:
-          projectBaseDir: board  # <--- 꼭 필요!
+          projectBaseDir: board
           args: |
             -Dsonar.projectKey=${{ env.SONAR_PROJECT_KEY }}
             -Dsonar.organization=f-lab-edu-1
