@@ -46,7 +46,7 @@ public class PostController {
     @GetMapping({"/comment/{commentId}"})
     public List<MoreCommentResponse> getMoreComment(@PathVariable long commentId,
                                                     @RequestParam(required = false, defaultValue = "0") int page) {
-        long offset = page != 0 ? (page - 1) * 10 : 0;
+        long offset = PostUtilMethod.calculateOffsetAndCheckPage(page);
         return postService.getMoreComment(commentId, offset);
     }
 
@@ -59,14 +59,14 @@ public class PostController {
     @GetMapping("join/{postId}")
     public PostDetailResponse getJoinPostDetail(@PathVariable long postId,
                                             @RequestParam(required = false, defaultValue = "0") int page) {
-        long offset = page != 0 ? (page - 1) * 10 : 0;
+        long offset = PostUtilMethod.calculateOffsetAndCheckPage(page);
         return postService.getJoinPostDetail(postId, offset);
     }
 
     @GetMapping({"join/comment/{commentId}"})
     public List<MoreCommentResponse> getJoinMoreComment(@PathVariable long commentId,
                                                     @RequestParam(required = false, defaultValue = "0") int page) {
-        long offset = page != 0 ? (page - 1) * 10 : 0;
+        long offset = PostUtilMethod.calculateOffsetAndCheckPage(page);
         return postService.getJoinMoreComment(commentId, offset);
     }
     //  join 방식 끝
@@ -75,14 +75,14 @@ public class PostController {
     @GetMapping("recursive/{postId}")
     public PostDetailResponse getRecursivePostDetail(@PathVariable long postId,
                                                 @RequestParam(required = false, defaultValue = "0") int page) {
-        long offset = page != 0 ? (page - 1) * 10 : 0;
+        long offset = PostUtilMethod.calculateOffsetAndCheckPage(page);
         return postService.getRecursivePostDetail(postId, offset);
     }
 
     @GetMapping({"recursive/comment/{commentId}"})
     public List<MoreCommentResponse> getRecursiveComment(@PathVariable long commentId,
                                                         @RequestParam(required = false, defaultValue = "0") int page) {
-        long offset = page != 0 ? (page - 1) * 10 : 0;
+        long offset = PostUtilMethod.calculateOffsetAndCheckPage(page);
         return postService.getRecursiveMoreComment(commentId, offset);
     }
     //recursive 방식 끝
