@@ -28,10 +28,20 @@ public class PostService {
 
         //1. 게시글 정보 가져오기
         PostDetailFromDB postDetailList = postRepository.getPostDetail(postId);
+
+        if(postDetailList.getCommentCount() == 0) {
+            return new PostDetailResponse(postDetailList, null, null);
+        }
         //2. 댓글 정보 가져오기
         List<CommentDetailFromDB> commentList = postRepository.getCommentList(postId, offset);
+        //3.
+        if(postDetailList.getHasImage() == 0) {
+            return new PostDetailResponse(postDetailList, commentList, null);
+        }
 
-        return new PostDetailResponse(postDetailList, commentList);
+        List<ImageUrlFromDB> imageUrlList = postRepository.getImageUrlList(postId);
+
+        return new PostDetailResponse(postDetailList, commentList, imageUrlList);
     }
 
     //대댓글 더보기 기능
@@ -59,10 +69,20 @@ public class PostService {
 
         //1. 게시글 정보 가져오기
         PostDetailFromDB postDetailList = postRepository.getPostDetail(postId);
+
+        if(postDetailList.getCommentCount() == 0) {
+            return new PostDetailResponse(postDetailList, null, null);
+        }
         //2. 댓글 정보 가져오기
         List<CommentDetailFromDB> commentList = postRepository.getJoinCommentList(postId, offset);
 
-        return new PostDetailResponse(postDetailList, commentList);
+        if(postDetailList.getHasImage() == 0) {
+            return new PostDetailResponse(postDetailList, commentList, null);
+        }
+
+        List<ImageUrlFromDB> imageUrlList = postRepository.getImageUrlList(postId);
+
+        return new PostDetailResponse(postDetailList, commentList, imageUrlList);
     }
 
     public List<MoreCommentResponse> getJoinMoreComment(long commentId, long offset) {
@@ -87,10 +107,20 @@ public class PostService {
 
         //1. 게시글 정보 가져오기
         PostDetailFromDB postDetailList = postRepository.getPostDetail(postId);
+
+        if(postDetailList.getCommentCount() == 0) {
+            return new PostDetailResponse(postDetailList, null, null);
+        }
         //2. 댓글 정보 가져오기
         List<CommentDetailFromDB> commentList = postRepository.getRecursiveCommentList(postId, offset);
 
-        return new PostDetailResponse(postDetailList, commentList);
+        if(postDetailList.getHasImage() == 0) {
+            return new PostDetailResponse(postDetailList, commentList, null);
+        }
+
+        List<ImageUrlFromDB> imageUrlList = postRepository.getImageUrlList(postId);
+
+        return new PostDetailResponse(postDetailList, commentList, imageUrlList);
     }
 
     public List<MoreCommentResponse> getRecursiveMoreComment(long commentId, long offset) {

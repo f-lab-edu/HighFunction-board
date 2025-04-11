@@ -21,8 +21,9 @@ public class PostDetailResponse {
     private LocalDateTime createdAt;
     private String authorEmail;
     private List<CommentDetailFromDB> commentList;
+    private List<ImageUrlFromDB> imageUrls;
 
-    public PostDetailResponse(PostDetailFromDB postDetailList, List<CommentDetailFromDB> commentList) {
+    public PostDetailResponse(PostDetailFromDB postDetailList, List<CommentDetailFromDB> commentList, List<ImageUrlFromDB> imageUrlList) {
         this.setPostId(postDetailList.getPostId());
         this.setPostTitle(postDetailList.getPostTitle());
         this.setViewCount(postDetailList.getViewCount());
@@ -31,6 +32,7 @@ public class PostDetailResponse {
         this.setCreatedAt(postDetailList.getCreatedAt());
         this.setAuthorEmail(postDetailList.getAuthorEmail());
         this.setCommentList(commentList);
+        this.setImageUrls(imageUrlList);
     }
 
 }

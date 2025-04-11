@@ -19,4 +19,5 @@ public class PostDetailFromDB {
     private LocalDateTime createdAt;
     private String authorEmail;
     private long commentCount;
+    private long hasImage;
 }

@@ -9,6 +9,10 @@ import java.util.List;
 @Mapper
 public interface PostRepository {
     PostDetailFromDB getPostDetail(Long postId);
+
+    //게시물 이미지 가져오기
+    List<ImageUrlFromDB> getImageUrlList(long postId);
+
     //서브쿼리
     List<CommentDetailFromDB> getCommentList(long postId, long offset);
     List<CommentDetailFromDB> getMoreCommentList(long commentId, long offset);

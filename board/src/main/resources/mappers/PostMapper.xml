@@ -15,14 +15,21 @@
             p.bad_count AS badCount,
             p.created_at AS createdAt,
             m.email AS authorEmail,
-            SUM(CASE WHEN c.parent_id IS NULL THEN 1 ELSE 0 END) AS commentCount
+            SUM(CASE WHEN c.parent_id IS NULL THEN 1 ELSE 0 END) AS commentCount,
+            EXISTS(SELECT 1 FROM postImage WHERE post_id = #{postId}) AS hasImage
         FROM post p
         JOIN member m ON p.member_id = m.id
         LEFT JOIN comment c ON p.id = c.post_id
-        where p.id = #{postId}
+        WHERE p.id = #{postId}
         GROUP BY p.id
     </select>
 
+    <select id="getImageUrlList" parameterType="Long" resultType="com.main.board.post.DTO.ImageUrlFromDB">
+        SELECT image_url AS imageUrl,
+                created_at AS createdAt
+        FROM postImage
+        WHERE post_id = #{postId}
+    </select>
 
     <select id="getCommentList" parameterType="Long" resultType="com.main.board.post.DTO.CommentDetailFromDB">
         SELECT
