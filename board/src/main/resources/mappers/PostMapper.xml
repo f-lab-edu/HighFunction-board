@@ -206,4 +206,17 @@
                          AND id = #{postId})
     </select>
 
+    <select id="selectRecentPostId" resultType="long" parameterType="long">
+        SELECT id
+          FROM post
+         WHERE member_id = #{memberId}
+      ORDER BY created_at DESC
+         LIMIT 1;
+    </select>
+
+    <insert id="createPostImage" parameterType="map">
+        INSERT INTO postImage (post_id, image_url, created_at)
+        VALUES (#{postId}, #{filePath}, now());
+    </insert>
+
 </mapper>

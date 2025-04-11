@@ -2,6 +2,7 @@ package com.main.board.post.repository;
 
 import com.main.board.post.DTO.*;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -28,6 +29,11 @@ public interface PostRepository {
     void deletePost(DeletePostRequest deletePostRequest);
     //해당 유저가 작성한 게시글인지 확인
     boolean selectPostForMember(long postId, long memberId);
+
+    //유저가 작성한 최신 게시물ID(postId) 가져오기
+    long selectRecentPostId(long memberId);
+    //게시물 이미지 등록
+    void createPostImage(@Param("postId") long postId, @Param("filePath") String filePath);
 
 
 

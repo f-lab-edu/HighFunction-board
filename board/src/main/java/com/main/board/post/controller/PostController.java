@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -90,8 +91,11 @@ public class PostController {
 
     //게시물 생성
     @PostMapping("createpost")
-    public ResponseEntity<String> createPost(@RequestBody @Valid CreatePostRequest createPostRequest) {
-                postService.createPost(createPostRequest);
+    public ResponseEntity<String> createPost(
+            @RequestPart(name = "data") @Valid CreatePostRequest createPostRequest,
+            @RequestPart(name = "postImage", required = false) List<MultipartFile> postImage) {
+        createPostRequest.setPostImageList(postImage);
+        postService.createPost(createPostRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body("게시물이 성공적으로 생성되었습니다!");
     }
 

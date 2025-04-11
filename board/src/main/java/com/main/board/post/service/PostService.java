@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -15,6 +16,9 @@ public class PostService {
 
     //Mybatis레포지토리
     private final PostRepository postRepository;
+
+    //파일 업로드 경로
+    private final String uploadDir = "C:\\Users\\uroeroe\\Desktop\\S3";
 
 
 
@@ -105,8 +109,35 @@ public class PostService {
     }
     //recursive 방식 끝
 
+
+    @Transactional
     public void createPost(CreatePostRequest createPostRequest) {
-        postRepository.createPost(createPostRequest);
+        if(createPostRequest.getPostImageList() == null) {
+            postRepository.createPost(createPostRequest);
+        }
+        else {
+            //파일 업로드 로직
+            String filePath;
+            try {
+                //1. 게시물 등록
+                postRepository.createPost(createPostRequest);
+                //2. 파일 경로 DB에 저장하기위해 게시물 조회
+                long recentlyPostId = postRepository.selectRecentPostId(createPostRequest.getMemberId());
+
+                for(int i = 0; i < createPostRequest.getPostImageList().size(); i++) {
+                    String fileName = UUID.randomUUID() + "_" + createPostRequest.getPostImageList().get(i).getOriginalFilename();
+                    filePath = uploadDir + "\\" + fileName;
+
+                    //1. 파일 업로드
+                    createPostRequest.getPostImageList().get(i).transferTo(new java.io.File(filePath));
+                    //2. DB에 파일 경로 저장
+                    postRepository.createPostImage(recentlyPostId, filePath);
+                }
+
+            } catch (Exception e) {
+                throw new RuntimeException("파일 업로드 실패", e);
+            }
+        }
     }
 
     public void updatePost(UpdatePostRequest updatePostRequest) {
