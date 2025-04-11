@@ -2,7 +2,9 @@ package com.main.board.post.controller;
 
 import com.main.board.post.DTO.*;
 import com.main.board.post.service.PostService;
+import com.main.board.post.util.PostUtilMethod;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,13 +25,25 @@ public class PostController {
     */
     @GetMapping("/{postId}")
     public PostDetailResponse getPostDetail(@PathVariable long postId,
-                                            @RequestParam(required = false, defaultValue = "0") int page) {
-        long offset = page != 0 ? (page - 1) * 10 : 0;
+                                            @RequestParam(required = false, defaultValue = "1") @Min(1)int page) {
+        /*
+         @Min 사용시에 음수일경우 MethodArgumentNotValidException이 아니라
+👉       ConstraintViolationException 예외
+         */
+
+        /*
+        방식1 메소드2개분리 (가독성을 최우선)
+        PostUtilMethod.checkPage(page);
+        long offset = PostUtilMethod.calculateOffset(page);
+        */
+
+        //방식2 메소드 1개로 합치기
+        long offset = PostUtilMethod.calculateOffsetAndCheckPage(page);
         return postService.getPostDetail(postId, offset);
     }
 
     //대댓글/대대댓글 더보기 기능
-    @GetMapping({"/comment/{commentId}", "/comment/{commentId}/more"})
+    @GetMapping({"/comment/{commentId}"})
     public List<MoreCommentResponse> getMoreComment(@PathVariable long commentId,
                                                     @RequestParam(required = false, defaultValue = "0") int page) {
         long offset = page != 0 ? (page - 1) * 10 : 0;
@@ -49,7 +63,7 @@ public class PostController {
         return postService.getJoinPostDetail(postId, offset);
     }
 
-    @GetMapping({"join/comment/{commentId}", "join/comment/{commentId}/more"})
+    @GetMapping({"join/comment/{commentId}"})
     public List<MoreCommentResponse> getJoinMoreComment(@PathVariable long commentId,
                                                     @RequestParam(required = false, defaultValue = "0") int page) {
         long offset = page != 0 ? (page - 1) * 10 : 0;
@@ -65,7 +79,7 @@ public class PostController {
         return postService.getRecursivePostDetail(postId, offset);
     }
 
-    @GetMapping({"recursive/comment/{commentId}", "recursive/comment/{commentId}/more"})
+    @GetMapping({"recursive/comment/{commentId}"})
     public List<MoreCommentResponse> getRecursiveComment(@PathVariable long commentId,
                                                         @RequestParam(required = false, defaultValue = "0") int page) {
         long offset = page != 0 ? (page - 1) * 10 : 0;

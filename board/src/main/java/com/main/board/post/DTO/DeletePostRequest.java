@@ -8,6 +8,6 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class DeletePostRequest {
-    private long postId;
-    private long memberId;
+    private Long postId;
+    private Long memberId;
 }

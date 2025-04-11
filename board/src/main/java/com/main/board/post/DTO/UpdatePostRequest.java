@@ -9,8 +9,8 @@ import lombok.Setter;
 @NoArgsConstructor
 public class UpdatePostRequest {
 
-    private long postId;
-    private long memberId;
+    private Long postId;
+    private Long memberId;
     private String postTitle;
     private String postContent;
 }

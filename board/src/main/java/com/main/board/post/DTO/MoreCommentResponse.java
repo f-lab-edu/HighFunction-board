@@ -18,7 +18,7 @@ public class MoreCommentResponse {
     private Long parentId;
     private boolean hasChild;
 
-    public void settingResponse(CommentDetailFromDB commentList) {
+    public MoreCommentResponse(CommentDetailFromDB commentList) {
         this.setCommentId(commentList.getCommentId());
         this.setCommentContent(commentList.getCommentContent());
         this.setLikeCount(commentList.getLikeCount());

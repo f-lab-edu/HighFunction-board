@@ -4,6 +4,7 @@ import com.main.board.post.DTO.*;
 import com.main.board.post.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,18 +19,15 @@ public class PostService {
 
 
     //1. 서브쿼리방식
+    @Transactional(readOnly = true)
     public PostDetailResponse getPostDetail(long postId, long offset) {
 
-        //1. 반환 객체 생성
-        PostDetailResponse postDetailResponseList = new PostDetailResponse();
-        //2. 게시글 정보 가져오기
+        //1. 게시글 정보 가져오기
         PostDetailFromDB postDetailList = postRepository.getPostDetail(postId);
-        //3. 댓글 정보 가져오기
+        //2. 댓글 정보 가져오기
         List<CommentDetailFromDB> commentList = postRepository.getCommentList(postId, offset);
-        //4. 반환객체에 매핑
-        postDetailResponseList.settingResponse(postDetailList, commentList);
 
-        return postDetailResponseList;
+        return new PostDetailResponse(postDetailList, commentList);
     }
 
     //대댓글 더보기 기능
@@ -42,8 +40,8 @@ public class PostService {
         //3. 반환객체에 매핑
         // 3. 대댓글 데이터를 MoreCommentResponse로 변환하여 리스트에 추가
         for (CommentDetailFromDB comment : commentList) {
-            MoreCommentResponse moreCommentResponse = new MoreCommentResponse();
-            moreCommentResponse.settingResponse(comment);  // CommentDetailFromDB를 MoreCommentResponse에 매핑
+            // CommentDetailFromDB를 MoreCommentResponse에 매핑
+            MoreCommentResponse moreCommentResponse = new MoreCommentResponse(comment);
             moreCommentResponseList.add(moreCommentResponse);  // 리스트에 추가
         }
         return moreCommentResponseList;
@@ -52,17 +50,15 @@ public class PostService {
 
 
     //2. join 방식
+    @Transactional(readOnly = true)
     public PostDetailResponse getJoinPostDetail(long postId, long offset) {
-        //1. 반환 객체 생성
-        PostDetailResponse postDetailResponseList = new PostDetailResponse();
-        //2. 게시글 정보 가져오기
-        PostDetailFromDB postDetailList = postRepository.getPostDetail(postId);
-        //3. 댓글 정보 가져오기
-        List<CommentDetailFromDB> commentList = postRepository.getJoinCommentList(postId, offset);
-        //4. 반환객체에 매핑
-        postDetailResponseList.settingResponse(postDetailList, commentList);
 
-        return postDetailResponseList;
+        //1. 게시글 정보 가져오기
+        PostDetailFromDB postDetailList = postRepository.getPostDetail(postId);
+        //2. 댓글 정보 가져오기
+        List<CommentDetailFromDB> commentList = postRepository.getJoinCommentList(postId, offset);
+
+        return new PostDetailResponse(postDetailList, commentList);
     }
 
     public List<MoreCommentResponse> getJoinMoreComment(long commentId, long offset) {
@@ -73,8 +69,8 @@ public class PostService {
         //3. 반환객체에 매핑
         // 3. 대댓글 데이터를 MoreCommentResponse로 변환하여 리스트에 추가
         for (CommentDetailFromDB comment : commentList) {
-            MoreCommentResponse moreCommentResponse = new MoreCommentResponse();
-            moreCommentResponse.settingResponse(comment);  // CommentDetailFromDB를 MoreCommentResponse에 매핑
+            // CommentDetailFromDB를 MoreCommentResponse에 매핑
+            MoreCommentResponse moreCommentResponse = new MoreCommentResponse(comment);
             moreCommentResponseList.add(moreCommentResponse);  // 리스트에 추가
         }
         return moreCommentResponseList;
@@ -82,17 +78,15 @@ public class PostService {
     //join 방식 끝
 
     //3. recursive 방식
+    @Transactional(readOnly = true)
     public PostDetailResponse getRecursivePostDetail(long postId, long offset) {
-        //1. 반환 객체 생성
-        PostDetailResponse postDetailResponseList = new PostDetailResponse();
-        //2. 게시글 정보 가져오기
-        PostDetailFromDB postDetailList = postRepository.getPostDetail(postId);
-        //3. 댓글 정보 가져오기
-        List<CommentDetailFromDB> commentList = postRepository.getRecursiveCommentList(postId, offset);
-        //4. 반환객체에 매핑
-        postDetailResponseList.settingResponse(postDetailList, commentList);
 
-        return postDetailResponseList;
+        //1. 게시글 정보 가져오기
+        PostDetailFromDB postDetailList = postRepository.getPostDetail(postId);
+        //2. 댓글 정보 가져오기
+        List<CommentDetailFromDB> commentList = postRepository.getRecursiveCommentList(postId, offset);
+
+        return new PostDetailResponse(postDetailList, commentList);
     }
 
     public List<MoreCommentResponse> getRecursiveMoreComment(long commentId, long offset) {
@@ -103,8 +97,8 @@ public class PostService {
         //3. 반환객체에 매핑
         // 3. 대댓글 데이터를 MoreCommentResponse로 변환하여 리스트에 추가
         for (CommentDetailFromDB comment : commentList) {
-            MoreCommentResponse moreCommentResponse = new MoreCommentResponse();
-            moreCommentResponse.settingResponse(comment);  // CommentDetailFromDB를 MoreCommentResponse에 매핑
+            // CommentDetailFromDB를 MoreCommentResponse에 매핑
+            MoreCommentResponse moreCommentResponse = new MoreCommentResponse(comment);
             moreCommentResponseList.add(moreCommentResponse);  // 리스트에 추가
         }
         return moreCommentResponseList;

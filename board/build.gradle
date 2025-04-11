@@ -48,28 +48,8 @@ dependencies {
 	annotationProcessor "com.querydsl:querydsl-apt:5.0.0:jakarta"  // 직접 명시
 	annotationProcessor "jakarta.annotation:jakarta.annotation-api"
 	annotationProcessor "jakarta.persistence:jakarta.persistence-api"
-
 	}
 
-
-// Querydsl 설정
-def querydslDir = file("src/main/generated")
-
-tasks.withType(JavaCompile).configureEach {
-	options.annotationProcessorGeneratedSourcesDirectory = querydslDir
-}
-
-sourceSets {
-	main {
-		java {
-			srcDirs += querydslDir
-		}
-	}
-}
-
-clean {
-	delete file('src/main/generated')
-}
 
 tasks.named('test') {
 	useJUnitPlatform()

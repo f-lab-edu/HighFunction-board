@@ -1,5 +1,6 @@
 package com.main.board.post.DTO;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,15 +12,11 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor
 public class CreatePostRequest {
-    private long memberId;
+    private Long memberId;
+    @NotBlank(message = "제목을 입력해주세요")
     @NotNull(message = "제목을 입력해주세요")
     private String postTitle;
+    @NotBlank(message = "내용을 입력해주세요")
     @NotNull(message = "내용을 입력해주세요")
     private String postContent;
-
-    private CreatePostRequest(long memberId, String postTitle, String postContent) {
-        this.memberId = memberId;
-        this.postTitle = postTitle;
-        this.postContent = postContent;
-    }
 }

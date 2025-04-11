@@ -22,7 +22,7 @@ public class PostDetailResponse {
     private String authorEmail;
     private List<CommentDetailFromDB> commentList;
 
-    public void settingResponse(PostDetailFromDB postDetailList, List<CommentDetailFromDB> commentList) {
+    public PostDetailResponse(PostDetailFromDB postDetailList, List<CommentDetailFromDB> commentList) {
         this.setPostId(postDetailList.getPostId());
         this.setPostTitle(postDetailList.getPostTitle());
         this.setViewCount(postDetailList.getViewCount());
