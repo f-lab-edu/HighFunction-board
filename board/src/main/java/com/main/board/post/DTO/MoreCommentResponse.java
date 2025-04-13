@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -17,6 +18,7 @@ public class MoreCommentResponse {
     private String authorEmail;
     private Long parentId;
     private boolean hasChild;
+    private List<CommentDetailFromDB> childCommentList;
 
     public MoreCommentResponse(CommentDetailFromDB commentList) {
         this.setCommentId(commentList.getCommentId());
@@ -26,5 +28,6 @@ public class MoreCommentResponse {
         this.setAuthorEmail(commentList.getEmail());
         this.setParentId(commentList.getParentId());
         this.setHasChild(commentList.isHasChild());
+        this.setChildCommentList(commentList.getChildCommentList());
     }
 }

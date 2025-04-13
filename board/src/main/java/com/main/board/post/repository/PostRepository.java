@@ -23,7 +23,7 @@ public interface PostRepository {
 
     //재귀 recursive
     List<CommentDetailFromDB> getRecursiveCommentList(long postId, long offset);
-    List<CommentDetailFromDB> getRecursiveMoreCommentList(long commentId, long offset);
+    List<CommentDetailFromDB> getRecursiveMoreCommentList(long commentId, long offset, long postId);
 
     //게시물 작성 ceate
     void createPost(CreatePostRequest createPostRequest);

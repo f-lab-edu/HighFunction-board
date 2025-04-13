@@ -2,13 +2,12 @@ package com.main.board.post.service;
 
 import com.main.board.post.DTO.*;
 import com.main.board.post.repository.PostRepository;
+import com.main.board.post.util.MoreCommentConverter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -51,7 +50,14 @@ public class PostService {
         List<MoreCommentResponse> moreCommentResponseList = new ArrayList<>();
         //2. 대댓글 정보 가져오기
         List<CommentDetailFromDB> commentList = postRepository.getMoreCommentList(commentId, offset);
-        //3. 반환객체에 매핑
+
+        //재귀를 써서 사용하는게 best같다 만약 recursive사용안하면 어떤식으로 구현해야할지 잘모르겠음
+        for(int i = 0; i < commentList.size(); i++) {
+            if(commentList.get(i).isHasChild()) {
+                commentList.get(i).setChildCommentList(postRepository.getMoreCommentList(commentList.get(i).getCommentId(), offset));
+            }
+        }
+
         // 3. 대댓글 데이터를 MoreCommentResponse로 변환하여 리스트에 추가
         for (CommentDetailFromDB comment : commentList) {
             // CommentDetailFromDB를 MoreCommentResponse에 매핑
@@ -123,18 +129,36 @@ public class PostService {
         return new PostDetailResponse(postDetailList, commentList, imageUrlList);
     }
 
-    public List<MoreCommentResponse> getRecursiveMoreComment(long commentId, long offset) {
+    public List<MoreCommentResponse> getRecursiveMoreComment(long commentId, long offset, long postId) {
         //1. 반환 객체 생성
         List<MoreCommentResponse> moreCommentResponseList = new ArrayList<>();
         //2. 대댓글 정보 가져오기
-        List<CommentDetailFromDB> commentList = postRepository.getRecursiveMoreCommentList(commentId, offset);
-        //3. 반환객체에 매핑
+        List<CommentDetailFromDB> commentList = postRepository.getRecursiveMoreCommentList(commentId, offset, postId);
+
+        Map<Long, CommentDetailFromDB> commentMap = new HashMap<>();
+
+
         // 3. 대댓글 데이터를 MoreCommentResponse로 변환하여 리스트에 추가
         for (CommentDetailFromDB comment : commentList) {
-            // CommentDetailFromDB를 MoreCommentResponse에 매핑
-            MoreCommentResponse moreCommentResponse = new MoreCommentResponse(comment);
-            moreCommentResponseList.add(moreCommentResponse);  // 리스트에 추가
+            commentMap.put(comment.getCommentId(), comment);
         }
+
+        for(CommentDetailFromDB comment : commentList) {
+            if(comment.getParentId() != null) {
+                CommentDetailFromDB parent = commentMap.get(comment.getParentId());
+                if(parent != null) {
+                    parent.getChildCommentList().add(comment);
+                }
+                else {
+                    MoreCommentResponse convertingData = new MoreCommentConverter(comment).toObject();
+                    moreCommentResponseList.add(convertingData);
+                }
+            } else {
+                MoreCommentResponse convertingData = new MoreCommentConverter(comment).toObject();
+                moreCommentResponseList.add(convertingData);
+            }
+        }
+
         return moreCommentResponseList;
     }
     //recursive 방식 끝

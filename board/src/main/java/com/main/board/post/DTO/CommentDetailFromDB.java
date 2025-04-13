@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -19,5 +20,5 @@ public class CommentDetailFromDB {
     private String email;
     private Long parentId;
     private boolean hasChild;
-    private List<CommentDetailFromDB> childCommentList;
+    private List<CommentDetailFromDB> childCommentList  = new ArrayList<>();;
 }

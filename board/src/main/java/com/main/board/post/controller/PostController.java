@@ -82,9 +82,10 @@ public class PostController {
 
     @GetMapping({"recursive/comment/{commentId}"})
     public List<MoreCommentResponse> getRecursiveComment(@PathVariable long commentId,
-                                                        @RequestParam(required = false, defaultValue = "0") int page) {
+                                                        @RequestParam(required = false, defaultValue = "0") int page,
+                                                        @RequestParam long postId) {
         long offset = PostUtilMethod.calculateOffsetAndCheckPage(page);
-        return postService.getRecursiveMoreComment(commentId, offset);
+        return postService.getRecursiveMoreComment(commentId, offset, postId);
     }
     //recursive 방식 끝
 

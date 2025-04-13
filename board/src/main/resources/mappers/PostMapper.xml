@@ -117,7 +117,7 @@
                 0 as level  -- 부모 댓글이면 level 0
             FROM comment c
                      JOIN member m on c.member_id = m.id
-            WHERE c.post_id = 2
+            WHERE c.post_id = #{postId}
               AND c.parent_id IS NULL
             UNION ALL
             SELECT
@@ -159,7 +159,7 @@
                 0 as level  -- 부모 댓글이면 level 0
             FROM comment c
                      JOIN member m on c.member_id = m.id
-            WHERE c.post_id = 2
+            WHERE c.post_id = #{postId}
               AND c.parent_id IS NULL
             UNION ALL
             SELECT
@@ -183,7 +183,7 @@
             ct.email,
             CASE WHEN EXISTS (SELECT 1 FROM comment c2 WHERE c2.parent_id = ct.commentId) THEN true ELSE false END AS hasChild
         FROM comment_tree ct
-        WHERE ct.parentid = #{commentId}
+        WHERE ct.parentid IS NOT NULL
         ORDER BY ct.createdAt ASC
         LIMIT #{offset}, 10
     </select>
