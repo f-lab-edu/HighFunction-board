@@ -4,8 +4,11 @@ import com.main.board.post.DTO.*;
 import com.main.board.post.repository.PostRepository;
 import com.main.board.post.util.MoreCommentConverter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
 
@@ -48,25 +51,39 @@ public class PostService {
 
         //1. 반환 객체 생성
         List<MoreCommentResponse> moreCommentResponseList = new ArrayList<>();
-        //2. 대댓글 정보 가져오기
-        List<CommentDetailFromDB> commentList = postRepository.getMoreCommentList(commentId, offset);
 
-        //재귀를 써서 사용하는게 best같다 만약 recursive사용안하면 어떤식으로 구현해야할지 잘모르겠음
-        for(int i = 0; i < commentList.size(); i++) {
-            if(commentList.get(i).isHasChild()) {
-                commentList.get(i).setChildCommentList(postRepository.getMoreCommentList(commentList.get(i).getCommentId(), offset));
-            }
-        }
+        List<CommentDetailFromDB> childComments = findRoopComment(commentId, offset);
+
+        //3. 자바에서 계층화를 위한 Map 생성(temp역할)
+        Map<Long, CommentDetailFromDB> commentMap = new HashMap<>();
 
         // 3. 대댓글 데이터를 MoreCommentResponse로 변환하여 리스트에 추가
-        for (CommentDetailFromDB comment : commentList) {
+        for (CommentDetailFromDB comment : childComments) {
             // CommentDetailFromDB를 MoreCommentResponse에 매핑
             MoreCommentResponse moreCommentResponse = new MoreCommentResponse(comment);
             moreCommentResponseList.add(moreCommentResponse);  // 리스트에 추가
         }
         return moreCommentResponseList;
     }
+
+    public List<CommentDetailFromDB> findRoopComment(long commentId, Long offset) {
+        // 1단계 자식 댓글 가져오기
+        List<CommentDetailFromDB> commentList = postRepository.getMoreCommentList(commentId, offset);
+
+        List<MoreCommentResponse> result = new ArrayList<>();
+
+        for(CommentDetailFromDB comment : commentList) {
+            if (comment.isHasChild()) {
+                List<CommentDetailFromDB> childComments = findRoopComment(comment.getCommentId(), offset);
+                comment.setChildCommentList(childComments);
+            }
+        }
+
+        return commentList;
+    }
+
     //서브쿼리방식 끝
+
 
 
     //2. join 방식
@@ -95,10 +112,10 @@ public class PostService {
         //1. 반환 객체 생성
         List<MoreCommentResponse> moreCommentResponseList = new ArrayList<>();
         //2. 대댓글 정보 가져오기
-        List<CommentDetailFromDB> commentList = postRepository.getJoinMoreCommentList(commentId, offset);
-        //3. 반환객체에 매핑
+        List<CommentDetailFromDB> childComments = findRoopComment(commentId, offset);
+
         // 3. 대댓글 데이터를 MoreCommentResponse로 변환하여 리스트에 추가
-        for (CommentDetailFromDB comment : commentList) {
+        for (CommentDetailFromDB comment : childComments) {
             // CommentDetailFromDB를 MoreCommentResponse에 매핑
             MoreCommentResponse moreCommentResponse = new MoreCommentResponse(comment);
             moreCommentResponseList.add(moreCommentResponse);  // 리스트에 추가
@@ -132,27 +149,34 @@ public class PostService {
     public List<MoreCommentResponse> getRecursiveMoreComment(long commentId, long offset, long postId) {
         //1. 반환 객체 생성
         List<MoreCommentResponse> moreCommentResponseList = new ArrayList<>();
-        //2. 대댓글 정보 가져오기
+        //2. 대댓글 정보 (계층화X)
         List<CommentDetailFromDB> commentList = postRepository.getRecursiveMoreCommentList(commentId, offset, postId);
-
+        //3. 자바에서 계층화를 위한 Map 생성(temp역할)
         Map<Long, CommentDetailFromDB> commentMap = new HashMap<>();
 
 
-        // 3. 대댓글 데이터를 MoreCommentResponse로 변환하여 리스트에 추가
+        // 4. 대댓글 데이터를 Map에 추가
         for (CommentDetailFromDB comment : commentList) {
             commentMap.put(comment.getCommentId(), comment);
         }
 
+        //5. 대댓글 데이터를 계층화
         for(CommentDetailFromDB comment : commentList) {
+            // 5-1. 부모 댓글이 있는 경우
             if(comment.getParentId() != null) {
+                // 5-1-1.Map에서 해당 부모 댓글을 찾아 변수에 담아준다
                 CommentDetailFromDB parent = commentMap.get(comment.getParentId());
+                // 5-1-2. 부모 댓글이 null이 아닌 경우
                 if(parent != null) {
+                    // 5-1-3. 부모 댓글의 자식 댓글 리스트에 현재 댓글을 추가
                     parent.getChildCommentList().add(comment);
                 }
+                // 5-1-4. 부모 댓글(map에서꺼낸 parent)가 null인 경우 comment데이터가 최상위 부모이기에 반환리스트에 추가
                 else {
                     MoreCommentResponse convertingData = new MoreCommentConverter(comment).toObject();
                     moreCommentResponseList.add(convertingData);
                 }
+            // 5-1-2. 부모댓글이 없는경우 이역시도 최상위 부모이기에 반환리스트에 추가
             } else {
                 MoreCommentResponse convertingData = new MoreCommentConverter(comment).toObject();
                 moreCommentResponseList.add(convertingData);
@@ -166,31 +190,34 @@ public class PostService {
 
     @Transactional
     public void createPost(CreatePostRequest createPostRequest) {
-        if(createPostRequest.getPostImageList() == null) {
+        // 이미지가 없으면 그냥 게시물만 등록하고 종료
+        if (createPostRequest.getPostImageList() == null) {
             postRepository.createPost(createPostRequest);
+            return;
         }
-        else {
-            //파일 업로드 로직
-            String filePath;
-            try {
-                //1. 게시물 등록
-                postRepository.createPost(createPostRequest);
-                //2. 파일 경로 DB에 저장하기위해 게시물 조회
-                long recentlyPostId = postRepository.selectRecentPostId(createPostRequest.getMemberId());
+        try {
+            // 1. 게시물 등록
+            postRepository.createPost(createPostRequest);
+            // 2. 등록된 게시물 ID 조회
+            long recentlyPostId = postRepository.selectRecentPostId(createPostRequest.getMemberId());
 
-                for(int i = 0; i < createPostRequest.getPostImageList().size(); i++) {
-                    String fileName = UUID.randomUUID() + "_" + createPostRequest.getPostImageList().get(i).getOriginalFilename();
-                    filePath = uploadDir + "\\" + fileName;
+            // 3. 이미지 파일 저장 및 경로 DB 저장
+            /*
+             1. for(int i = 0; i < createPostRequest.getPostImageList().size(); i++)
+             위 인덱스 방식은 코드가 장황하고 IndexOutOfBoundsException이 있기에 변경
+             2. createPostRequest.getPostImageList().get(i).getOriginalFilename();
+             형식의 request에 직접 접근하는게 아닌 한번에 MultipartFile로 하나씩 꺼내 file을 바로 사용할수있도록 변경
+             변수명이 명확해져 가독성 증가
+            */
+            for (MultipartFile file : createPostRequest.getPostImageList()) {
+                String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
+                String filePath = uploadDir + "\\" + fileName;
 
-                    //1. 파일 업로드
-                    createPostRequest.getPostImageList().get(i).transferTo(new java.io.File(filePath));
-                    //2. DB에 파일 경로 저장
-                    postRepository.createPostImage(recentlyPostId, filePath);
-                }
-
-            } catch (Exception e) {
-                throw new RuntimeException("파일 업로드 실패", e);
+                file.transferTo(new java.io.File(filePath));
+                postRepository.createPostImage(recentlyPostId, filePath);
             }
+        } catch (Exception e) {
+            throw new RuntimeException("파일 업로드 실패", e);
         }
     }
 
@@ -203,7 +230,13 @@ public class PostService {
     }
 
     public void deletePost(DeletePostRequest deletePostRequest) {
-        boolean checkOwner = postRepository.selectPostForMember(deletePostRequest.getPostId(), deletePostRequest.getMemberId());
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        //TODO : authentication.getName()으로 memberId를 가져오는 로직을 구현해야함
+        long memberId = 1234; //authentication.getName()
+        if (authentication != null && authentication.isAuthenticated()) {
+            authentication.getName();  // 여기서 반환되는 값은 보통 유저의 ID
+        }
+        boolean checkOwner = postRepository.selectPostForMember(deletePostRequest.getPostId(), memberId);
         if(!checkOwner) {
             throw new IllegalArgumentException("게시물 작성자가 아닙니다.");
         }

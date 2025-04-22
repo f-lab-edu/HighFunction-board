@@ -20,5 +20,5 @@ public class CommentDetailFromDB {
     private String email;
     private Long parentId;
     private boolean hasChild;
-    private List<CommentDetailFromDB> childCommentList  = new ArrayList<>();;
+    private List<CommentDetailFromDB> childCommentList  = new ArrayList<>();
 }

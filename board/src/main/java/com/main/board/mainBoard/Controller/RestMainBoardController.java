@@ -21,6 +21,10 @@ public class RestMainBoardController {
     @ModelAttribute를 안쓰는 이유는 모든데이터를 받을수있다면 쓰겠지만
     데이터가 무조건 다 들어오지않기떄문에 명시적으로쉽게 볼수있는 장점도있는 @RequestParam을 사용하여
     Request에 매핑을 진행한다
+
+    1. @ModelAttribute는Setter 기반으로 객체 필드명과 일치하는 파라미터를 찾아 바인딩
+    2. @RequestParam은 단일값에 사용되며 내부적으로 HttpServletRequest.getParameter("key")로 값을 꺼내고 타입 변환
+    3. @RequestBody는 HTTP Body의 JSON 데이터를 Jackson으로 역직렬화해서 객체에 바인딩
      */
 
     @GetMapping

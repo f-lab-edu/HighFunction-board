@@ -1,6 +1,7 @@
 package com.main.board;
 
 import com.main.board.member.exception.EmailDuplicatedException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.validation.FieldError;
@@ -8,24 +9,27 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+@Slf4j
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
     //서버 500 에러
     @ExceptionHandler(Exception.class)
-    public ProblemDetail handleGeneralException() {
+    public ProblemDetail handleGeneralException(Exception e) {
+        log.error("에러 로그", e);
         return ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, "서버에러입니다 다시시도해주세요.");
     }
 
     // 이메일 중복 에러
     @ExceptionHandler(EmailDuplicatedException.class)
-    public ProblemDetail handleEmailDuplicatedException() {
+    public ProblemDetail handleEmailDuplicatedException(Exception e) {
+        log.error("에러 로그", e);
         return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, "이미 사용중인 이메일입니다.");
     }
 
     //nullpoint 에러 (파라미터 누락)
     @ExceptionHandler(NullPointerException.class)
-    public ProblemDetail handleNullPointerException() {
+    public ProblemDetail handleNullPointerException(Exception e) {
         return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "파라미터가 제대로 전달되지 않았습니다.");
     }
 
