@@ -10,6 +10,8 @@ import java.util.List;
 public interface PostRepository {
     PostDetailFromDB getPostDetail(Long postId);
 
+    long findByPostId(long commentId);
+
     //게시물 이미지 가져오기
     List<ImageUrlFromDB> getImageUrlList(long postId);
 
@@ -30,7 +32,7 @@ public interface PostRepository {
     //게시물 수정 update
     void updatePost(UpdatePostRequest updatePostRequest);
     //게시물 삭제 delete
-    void deletePost(DeletePostRequest deletePostRequest);
+    void deletePost(long postId);
     //해당 유저가 작성한 게시글인지 확인
     boolean selectPostForMember(long postId, long memberId);
 

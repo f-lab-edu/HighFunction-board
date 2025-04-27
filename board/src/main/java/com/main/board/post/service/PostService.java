@@ -146,7 +146,11 @@ public class PostService {
         return new PostDetailResponse(postDetailList, commentList, imageUrlList);
     }
 
-    public List<MoreCommentResponse> getRecursiveMoreComment(long commentId, long offset, long postId) {
+    public List<MoreCommentResponse> getRecursiveMoreComment(long commentId, long offset) {
+
+        // 게시물Id조회
+        long postId = postRepository.findByPostId(commentId);
+
         //1. 반환 객체 생성
         List<MoreCommentResponse> moreCommentResponseList = new ArrayList<>();
         //2. 대댓글 정보 (계층화X)
@@ -229,17 +233,17 @@ public class PostService {
         postRepository.updatePost(updatePostRequest);
     }
 
-    public void deletePost(DeletePostRequest deletePostRequest) {
+    public void deletePost(Long postId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         //TODO : authentication.getName()으로 memberId를 가져오는 로직을 구현해야함
         long memberId = 1234; //authentication.getName()
         if (authentication != null && authentication.isAuthenticated()) {
             authentication.getName();  // 여기서 반환되는 값은 보통 유저의 ID
         }
-        boolean checkOwner = postRepository.selectPostForMember(deletePostRequest.getPostId(), memberId);
+        boolean checkOwner = postRepository.selectPostForMember(postId, memberId);
         if(!checkOwner) {
             throw new IllegalArgumentException("게시물 작성자가 아닙니다.");
         }
-        postRepository.deletePost(deletePostRequest);
+        postRepository.deletePost(postId);
     }
 }

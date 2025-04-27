@@ -82,10 +82,10 @@ public class PostController {
 
     @GetMapping({"recursive/comment/{commentId}"})
     public List<MoreCommentResponse> getRecursiveComment(@PathVariable long commentId,
-                                                        @RequestParam(required = false, defaultValue = "0") int page,
-                                                        @RequestParam long postId) {
+                                                        @RequestParam(required = false, defaultValue = "0") int page) {
         long offset = PostUtilMethod.calculateOffsetAndCheckPage(page);
-        return postService.getRecursiveMoreComment(commentId, offset, postId);
+
+        return postService.getRecursiveMoreComment(commentId, offset);
     }
     //recursive 방식 끝
 
@@ -101,14 +101,15 @@ public class PostController {
     }
 
     @PostMapping("updatepost")
+    @PatchMapping("/{postId}")
     public ResponseEntity<String> updatePost(@RequestBody @Valid UpdatePostRequest updatePostRequest) {
         postService.updatePost(updatePostRequest);
         return ResponseEntity.status(HttpStatus.OK).body("게시물이 성공적으로 수정되었습니다!");
     }
 
-    @PostMapping("deletepost")
-    public ResponseEntity<String> deletePost(@RequestBody @Valid DeletePostRequest deletePostRequest) {
-        postService.deletePost(deletePostRequest);
+    @DeleteMapping("/{postId}")
+    public ResponseEntity<String> deletePost(@PathVariable Long postId) {
+        postService.deletePost(postId);
         return ResponseEntity.status(HttpStatus.OK).body("게시물이 성공적으로 삭제되었습니다!");
     }
 

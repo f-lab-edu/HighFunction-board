@@ -5,6 +5,12 @@
 
 <mapper namespace="com.main.board.post.repository.PostRepository">
 
+    <select id="findByPostId" parameterType="Long" resultType="Long">
+        SELECT c.post_id
+        FROM comment c
+        WHERE c.id = #{commentId}
+    </select>
+
     <select id="getPostDetail" parameterType="Long" resultType="com.main.board.post.DTO.PostDetailFromDB">
         SELECT
             p.id AS postId,
