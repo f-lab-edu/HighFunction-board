@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>High Function board</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<h1>High Function board</h1>
+
+<table border="1">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>제목</th>
+        <th>작성자</th>
+        <th>작성일</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="post : ${posts}">
+        <td th:text="${post.postId}">1</td>
+        <td>
+            <a th:href="@{/board/view/{id}(id=${post.postId})}" th:text="${post.postTitle}">제목</a>
+        </td>
+        <td th:text="${post.authEmail}">작성자</td>
+        <td th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd')}">날짜</td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

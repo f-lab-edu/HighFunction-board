@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.main.board.post.repository.PostRepository">
+
+    <select id="findByPostId" parameterType="Long" resultType="Long">
+        SELECT c.post_id
+        FROM comment c
+        WHERE c.id = #{commentId}
+    </select>
+
+    <select id="getPostDetail" parameterType="Long" resultType="com.main.board.post.DTO.PostDetailFromDB">
+        SELECT
+            p.id AS postId,
+            p.title AS postTitle,
+            p.content AS postContent,
+            p.viewcount AS viewCount,
+            p.like_count AS likeCount,
+            p.bad_count AS badCount,
+            p.created_at AS createdAt,
+            m.email AS authorEmail,
+            SUM(CASE WHEN c.parent_id IS NULL THEN 1 ELSE 0 END) AS commentCount,
+            EXISTS(SELECT 1 FROM postImage WHERE post_id = #{postId}) AS hasImage
+        FROM post p
+        JOIN member m ON p.member_id = m.id
+        LEFT JOIN comment c ON p.id = c.post_id
+        WHERE p.id = #{postId}
+        GROUP BY p.id
+    </select>
+
+    <select id="getImageUrlList" parameterType="Long" resultType="com.main.board.post.DTO.ImageUrlFromDB">
+        SELECT image_url AS imageUrl,
+                created_at AS createdAt
+        FROM postImage
+        WHERE post_id = #{postId}
+    </select>
+
+    <select id="getCommentList" parameterType="Long" resultType="com.main.board.post.DTO.CommentDetailFromDB">
+        SELECT
+            c.id as commentId,
+            c.comment_content as commentContent,
+            c.create_at as createdAt,
+            c.comment_like as likeCount,
+            c.parent_id as parentId,
+            m.email as email,
+        (SELECT EXISTS (SELECT 1 FROM comment WHERE parent_id = c.id)) AS hasChild
+        FROM comment c
+                 join member m on c.member_id = m.id
+        WHERE post_id = #{postId}
+        AND c.parent_id IS NULL
+        ORDER BY c.create_at ASC
+        LIMIT #{offset}, 10
+    </select>
+
+
+    <select id="getMoreCommentList" parameterType="Long" resultType="com.main.board.post.DTO.CommentDetailFromDB">
+        SELECT
+            c.id as commentId,
+            c.comment_content as commentContent,
+            c.create_at as createdAt,
+            c.comment_like as likeCount,
+            c.parent_id as parentId,
+            m.email as email,
+            (SELECT EXISTS (SELECT 1 FROM comment WHERE parent_id = c.id)) AS hasChild
+        FROM comment c
+                 join member m on c.member_id = m.id
+        WHERE parent_id = #{commentId}
+        ORDER BY c.create_at ASC
+        LIMIT #{offset}, 10
+    </select>
+
+
+
+    <select id="getJoinCommentList" parameterType="Long" resultType="com.main.board.post.DTO.CommentDetailFromDB">
+        SELECT
+            c.id as commentId,
+            c.comment_content as commentContent,
+            c.create_at as createdAt,
+            c.comment_like as likeCount,
+            c.parent_id as parentId,
+            m.email as email,
+            CASE WHEN COUNT(c2.id) > 0 THEN true ELSE false END AS hasChild
+        FROM comment c
+                 join member m on c.member_id = m.id
+                 left join comment c2 on c.id = c2.parent_id
+        WHERE c.post_id = #{postId}
+          and c.parent_id IS NULL
+        GROUP BY c.id
+        ORDER BY c.create_at ASC
+            LIMIT #{offset}, 10
+    </select>
+
+
+    <select id="getJoinMoreCommentList" parameterType="Long" resultType="com.main.board.post.DTO.CommentDetailFromDB">
+        SELECT
+            c.id as commentId,
+            c.comment_content as commentContent,
+            c.create_at as createdAt,
+            c.comment_like as likeCount,
+            c.parent_id as parentId,
+            m.email as email,
+            CASE WHEN COUNT(c2.id) > 0 THEN true ELSE false END AS hasChild
+        FROM comment c
+                 join member m on c.member_id = m.id
+                 left join comment c2 on c.id = c2.parent_id
+        WHERE c.parent_id = #{commentId}
+        GROUP BY c.id
+        ORDER BY c.create_at ASC
+            LIMIT #{offset}, 10
+    </select>
+
+    <select id="getRecursiveCommentList" parameterType="Long" resultType="com.main.board.post.DTO.CommentDetailFromDB">
+        WITH RECURSIVE comment_tree AS (
+            SELECT
+                c.id as commentId,
+                c.comment_content as commentContent,
+                c.create_at as createdAt,
+                c.comment_like as likeCount,
+                c.parent_id as parentId,
+                m.email as email,
+                0 as level  -- 부모 댓글이면 level 0
+            FROM comment c
+                     JOIN member m on c.member_id = m.id
+            WHERE c.post_id = #{postId}
+              AND c.parent_id IS NULL
+            UNION ALL
+            SELECT
+                c.id as commentId,
+                c.comment_content as commentContent,
+                c.create_at as createdAt,
+                c.comment_like as likeCount,
+                c.parent_id as parentId,
+                m.email as email,
+                ct.level + 1 as level -- 부모 댓글이면 level +
+            FROM comment c
+                     JOIN member m on c.member_id = m.id
+                     JOIN comment_tree ct on c.parent_id = ct.commentId  -- 부모 댓글과 연결
+        )
+        SELECT
+            ct.commentId,
+            ct.commentContent,
+            ct.createdAt,
+            ct.likeCount,
+            ct.parentId,
+            ct.email,
+            CASE WHEN EXISTS (SELECT 1 FROM comment c2 WHERE c2.parent_id = ct.commentId) THEN true ELSE false END AS hasChild
+        FROM comment_tree ct
+        WHERE ct.parentid IS NULL
+        ORDER BY ct.createdAt ASC
+        LIMIT #{offset}, 10
+    </select>
+
+
+    <select id="getRecursiveMoreCommentList" parameterType="Long" resultType="com.main.board.post.DTO.CommentDetailFromDB">
+        WITH RECURSIVE comment_tree AS (
+            SELECT
+                c.id as commentId,
+                c.comment_content as commentContent,
+                c.create_at as createdAt,
+                c.comment_like as likeCount,
+                c.parent_id as parentId,
+                m.email as email,
+                0 as level  -- 부모 댓글이면 level 0
+            FROM comment c
+                     JOIN member m on c.member_id = m.id
+            WHERE c.post_id = #{postId}
+              AND c.parent_id IS NULL
+            UNION ALL
+            SELECT
+                c.id as commentId,
+                c.comment_content as commentContent,
+                c.create_at as createdAt,
+                c.comment_like as likeCount,
+                c.parent_id as parentId,
+                m.email as email,
+                ct.level + 1 as level -- 부모 댓글이면 level +
+            FROM comment c
+                     JOIN member m on c.member_id = m.id
+                     JOIN comment_tree ct on c.parent_id = ct.commentId  -- 부모 댓글과 연결
+        )
+        SELECT
+            ct.commentId,
+            ct.commentContent,
+            ct.createdAt,
+            ct.likeCount,
+            ct.parentId,
+            ct.email,
+            CASE WHEN EXISTS (SELECT 1 FROM comment c2 WHERE c2.parent_id = ct.commentId) THEN true ELSE false END AS hasChild
+        FROM comment_tree ct
+        WHERE ct.parentid IS NOT NULL
+        ORDER BY ct.createdAt ASC
+        LIMIT #{offset}, 10
+    </select>
+
+    <select id="createPost" parameterType="com.main.board.post.DTO.CreatePostRequest">
+        INSERT INTO post (title, content, member_id, created_at)
+        VALUES (#{postTitle}, #{postContent}, #{memberId}, now())
+    </select>
+
+    <select id="updatePost" parameterType="com.main.board.post.DTO.UpdatePostRequest">
+        UPDATE post
+        SET title = #{postTitle},
+            content = #{postContent},
+            update_at = now()
+        WHERE id = #{postId}
+    </select>
+
+    <select id="deletePost" parameterType="com.main.board.post.DTO.DeletePostRequest">
+        DELETE FROM post
+        WHERE id = #{postId}
+    </select>
+
+    <select id="selectPostForMember" resultType="boolean" parameterType="long">
+        SELECT EXISTS(SELECT 1
+                        FROM post
+                       WHERE member_id = #{memberId}
+                         AND id = #{postId})
+    </select>
+
+    <select id="selectRecentPostId" resultType="long" parameterType="long">
+        SELECT id
+          FROM post
+         WHERE member_id = #{memberId}
+      ORDER BY created_at DESC
+         LIMIT 1;
+    </select>
+
+    <insert id="createPostImage" parameterType="map">
+        INSERT INTO postImage (post_id, image_url, created_at)
+        VALUES (#{postId}, #{filePath}, now());
+    </insert>
+
+</mapper>

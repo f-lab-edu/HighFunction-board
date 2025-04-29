@@ -74,7 +74,7 @@ public class MainBoardService {
 
             // map이 아니였다면 list를 돌면서 찾아야함 -> O(n)
             response.setCommentCount(commentCountMap.getOrDefault(post.getPostId(), 0L));
-            response.setEmail(emailMap.getOrDefault(post.getPostId(), "이메일 없음"));
+            response.setAuthEmail(emailMap.getOrDefault(post.getPostId(), "이메일 없음"));
 
 
             // 결과 리스트에 추가

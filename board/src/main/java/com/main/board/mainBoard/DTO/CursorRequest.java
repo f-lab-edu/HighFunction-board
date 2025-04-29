@@ -9,6 +9,16 @@ import java.util.Optional;
 @Getter
 @NoArgsConstructor
 public class CursorRequest {
+
+    //1. Request객체안에 상수 선언하기
+    public static final String DESC = "DESC";
+    public static final String ASC = "ASC";
+
+    public static CursorRequest defaultDesc() {
+        return new CursorRequest(10L, null, null, DESC);
+    }
+
+
     @NotNull(message = "limit은 필수값입니다.")
     private Long limit;
     private Long cursorId; //커서값은 게시물 아이디

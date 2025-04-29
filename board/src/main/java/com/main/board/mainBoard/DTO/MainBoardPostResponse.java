@@ -16,7 +16,7 @@ public class MainBoardPostResponse {
     private Long likeCount;
     private Long badCount;
     private LocalDateTime createdAt;
-    private String email; //작성자 명
+    private String authEmail; //작성자 명
     private Long commentCount;
 
     public MainBoardPostResponse(MainBoardDataFromDB data) {
@@ -26,7 +26,7 @@ public class MainBoardPostResponse {
         this.likeCount = data.getLikeCount();
         this.badCount = data.getBadCount();
         this.createdAt = data.getCreatedAt();
-        this.email = data.getEmail();
+        this.authEmail = data.getEmail();
         this.commentCount = data.getCommentCount();
     }
 }
