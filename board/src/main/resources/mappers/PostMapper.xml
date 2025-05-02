@@ -92,6 +92,11 @@
             LIMIT #{offset}, 10
     </select>
 
+    <select id="findByPath" parameterType="Long" resultType="Long">
+        SELECT c.comment_path
+        FROM comment c
+        WHERE c.id = #{commentId}
+    </select>
 
     <select id="getJoinMoreCommentList" parameterType="Long" resultType="com.main.board.post.DTO.CommentDetailFromDB">
         SELECT
@@ -191,6 +196,24 @@
         FROM comment_tree ct
         WHERE ct.parentid IS NOT NULL
         ORDER BY ct.createdAt ASC
+        LIMIT #{offset}, 10
+    </select>
+
+    <select id="findAllComment" parameterType="Long" resultType="com.main.board.post.DTO.CommentDetailFromDB">
+        SELECT  c.id as commentId,
+                c.comment_content as commentContent,
+                c.create_at as createdAt,
+                c.comment_like as likeCount,
+                c.parent_id as parentId,
+                m.email as email,
+                CASE WHEN COUNT(c2.id) > 0 THEN true ELSE false END AS hasChild
+        FROM comment c
+        join member m on c.member_id = m.id
+        left join comment c2 on c.id = c2.parent_id
+        WHERE c.post_id = #{postId}
+          AND c.comment_path LIKE CONCAT(#{parentPath}, '/%')
+        GROUP BY c.id
+        ORDER BY c.create_at ASC
         LIMIT #{offset}, 10
     </select>
 

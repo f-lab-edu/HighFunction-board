@@ -191,6 +191,48 @@ public class PostService {
     }
     //recursive 방식 끝
 
+    public List<MoreCommentResponse> findAllComment(long commentId, long offset) {
+        // 1. 부모댓글의 path값 가져오기
+        long parentPath = postRepository.findByPath(commentId);
+        // 2. postId 가져오기
+        long postId = postRepository.findByPostId(commentId);
+        //3. 부모댓글의 path값을 통해 자식 댓글 가져오기
+        List<CommentDetailFromDB> commentList = postRepository.findAllComment(parentPath, postId, offset);
+
+        Map<Long, CommentDetailFromDB> commentMap = new HashMap<>();
+
+        //1. 반환 객체 생성
+        List<MoreCommentResponse> moreCommentResponseList = new ArrayList<>();
+
+        for(CommentDetailFromDB comment : commentList) {
+            commentMap.put(comment.getCommentId(), comment);
+        }
+
+        //5. 대댓글 데이터를 계층화
+        for(CommentDetailFromDB comment : commentList) {
+            // 5-1. 부모 댓글이 있는 경우
+            if(comment.getParentId() != null) {
+                // 5-1-1.Map에서 해당 부모 댓글을 찾아 변수에 담아준다
+                CommentDetailFromDB parent = commentMap.get(comment.getParentId());
+                // 5-1-2. 부모 댓글이 null이 아닌 경우
+                if(parent != null) {
+                    // 5-1-3. 부모 댓글의 자식 댓글 리스트에 현재 댓글을 추가
+                    parent.getChildCommentList().add(comment);
+                }
+                // 5-1-4. 부모 댓글(map에서꺼낸 parent)가 null인 경우 comment데이터가 최상위 부모이기에 반환리스트에 추가
+                else {
+                    MoreCommentResponse convertingData = new MoreCommentConverter(comment).toObject();
+                    moreCommentResponseList.add(convertingData);
+                }
+                // 5-1-2. 부모댓글이 없는경우 이역시도 최상위 부모이기에 반환리스트에 추가
+            } else {
+                MoreCommentResponse convertingData = new MoreCommentConverter(comment).toObject();
+                moreCommentResponseList.add(convertingData);
+            }
+        }
+        return moreCommentResponseList;
+    }
+
 
     @Transactional
     public void createPost(CreatePostRequest createPostRequest) {

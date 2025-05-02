@@ -72,6 +72,14 @@ public class PostController {
     }
     //  join 방식 끝
 
+    // v2방식 join과 비교하기
+    @GetMapping("/findAllComment/{commentId}")
+    public List<MoreCommentResponse> findAllComment(@PathVariable long commentId,
+                                                    @RequestParam(required = false, defaultValue = "0") int page) {
+        long offset = PostUtilMethod.calculateOffsetAndCheckPage(page);
+        return postService.findAllComment(commentId, offset);
+    }
+
     //recursive 방식
     @GetMapping("recursive/{postId}")
     public PostDetailResponse getRecursivePostDetail(@PathVariable long postId,
