@@ -193,7 +193,7 @@ public class PostService {
 
     public List<MoreCommentResponse> findAllComment(long commentId, long offset) {
         // 1. 부모댓글의 path값 가져오기
-        long parentPath = postRepository.findByPath(commentId);
+        long parentPath = postRepository.getPathByCommentId(commentId);
         // 2. postId 가져오기
         long postId = postRepository.findByPostId(commentId);
         //3. 부모댓글의 path값을 통해 자식 댓글 가져오기

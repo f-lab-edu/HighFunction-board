@@ -92,7 +92,7 @@
             LIMIT #{offset}, 10
     </select>
 
-    <select id="findByPath" parameterType="Long" resultType="Long">
+    <select id="getPathByCommentId" parameterType="Long" resultType="Long">
         SELECT c.comment_path
         FROM comment c
         WHERE c.id = #{commentId}

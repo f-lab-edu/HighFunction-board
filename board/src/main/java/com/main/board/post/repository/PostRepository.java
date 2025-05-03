@@ -29,7 +29,7 @@ public interface PostRepository {
 
     //댓글 성능 튜닝
     //1. path가져오기
-    long findByPath(long commentId);
+    long getPathByCommentId(long commentId);
     List<CommentDetailFromDB> findAllComment(long parentPath, long postId, long offset);
 
     //게시물 작성 ceate
