@@ -255,4 +255,36 @@
         VALUES (#{postId}, #{filePath}, now());
     </insert>
 
+    <select id="getLogicalId" parameterType="long" resultType="long">
+        SELECT last_logical_id
+        FROM post
+        WHERE id = #{postId}
+        FOR UPDATE
+    </select>
+
+    <update id="updateLogicalId" parameterType="long">
+        UPDATE post
+        SET last_logical_id = #{last_logical_id}
+        WHERE id = #{postId}
+    </update>
+
+    <select id="getCommentPath" parameterType="long" resultType="String">
+        SELECT comment_path
+        FROM comment
+        WHERE post_id = #{postId}
+        AND id = #{parentId}
+    </select>
+
+    <insert id="createParentComment" parameterType="map">
+        INSERT INTO comment (member_id, post_id,logical_id, comment_path,comment_content, create_at)
+        VALUES (#{createCommentRequest.memberId}, #{postId},#{last_logical_id}, #{last_logical_id}, #{createCommentRequest.commentContent}, now());
+    </insert>
+
+    <insert id="createChildComment" parameterType="map">
+        INSERT INTO comment (member_id, post_id, parent_id, logical_id, comment_path, comment_content, create_at)
+        VALUES (#{createCommentRequest.memberId}, #{postId}, #{createCommentRequest.parentId},#{last_logical_id}, #{commentPath}, #{createCommentRequest.commentContent}, now());
+    </insert>
+
+
+
 </mapper>

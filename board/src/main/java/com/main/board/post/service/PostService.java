@@ -288,4 +288,23 @@ public class PostService {
         }
         postRepository.deletePost(postId);
     }
+
+    @Transactional
+    public void createComment(CreateCommentRequest createCommentRequest, long postId) {
+        //1. logicalId 가져오기 (인덱스걸려있는 id에 FOR UPDATE)
+        long last_logical_id = postRepository.getLogicalId(postId) + 1;
+        //2. 게시글에 logical_Id세팅
+        postRepository.updateLogicalId(postId, last_logical_id);
+
+        //2. 원댓글인지 대댓글인지 확인
+        if(createCommentRequest.getParentId() == null) {
+            //3. 원댓글인 경우
+            postRepository.createParentComment(createCommentRequest, last_logical_id, postId);
+        } else {
+            //4. 대댓글인 경우 상위 뎁스 조회
+            String comment_content = postRepository.getCommentPath(postId, createCommentRequest.getParentId()) +"/" + last_logical_id ;
+            postRepository.createChildComment(createCommentRequest, last_logical_id, postId, comment_content);
+        }
+
+    }
 }

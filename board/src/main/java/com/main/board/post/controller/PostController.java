@@ -121,4 +121,12 @@ public class PostController {
         return ResponseEntity.status(HttpStatus.OK).body("게시물이 성공적으로 삭제되었습니다!");
     }
 
+
+    //댓글 생성
+    @PostMapping("/createcomment/{postId}")
+    public ResponseEntity<String> createComment(
+            @RequestBody @Valid CreateCommentRequest createCommentRequest, @PathVariable Long postId) {
+        postService.createComment(createCommentRequest, postId);
+        return ResponseEntity.status(HttpStatus.CREATED).body("댓글이 성공적으로 생성되었습니다!");
+    }
 }
