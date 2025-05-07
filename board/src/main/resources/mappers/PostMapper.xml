@@ -92,6 +92,11 @@
             LIMIT #{offset}, 10
     </select>
 
+    <select id="getPathByCommentId" parameterType="Long" resultType="Long">
+        SELECT c.comment_path
+        FROM comment c
+        WHERE c.id = #{commentId}
+    </select>
 
     <select id="getJoinMoreCommentList" parameterType="Long" resultType="com.main.board.post.DTO.CommentDetailFromDB">
         SELECT
@@ -194,6 +199,24 @@
         LIMIT #{offset}, 10
     </select>
 
+    <select id="findAllComment" parameterType="Long" resultType="com.main.board.post.DTO.CommentDetailFromDB">
+        SELECT  c.id as commentId,
+                c.comment_content as commentContent,
+                c.create_at as createdAt,
+                c.comment_like as likeCount,
+                c.parent_id as parentId,
+                m.email as email,
+                CASE WHEN COUNT(c2.id) > 0 THEN true ELSE false END AS hasChild
+        FROM comment c
+        join member m on c.member_id = m.id
+        left join comment c2 on c.id = c2.parent_id
+        WHERE c.post_id = #{postId}
+          AND c.comment_path LIKE CONCAT(#{parentPath}, '/%')
+        GROUP BY c.id
+        ORDER BY c.create_at ASC
+        LIMIT #{offset}, 10
+    </select>
+
     <select id="createPost" parameterType="com.main.board.post.DTO.CreatePostRequest">
         INSERT INTO post (title, content, member_id, created_at)
         VALUES (#{postTitle}, #{postContent}, #{memberId}, now())
@@ -231,5 +254,37 @@
         INSERT INTO postImage (post_id, image_url, created_at)
         VALUES (#{postId}, #{filePath}, now());
     </insert>
+
+    <select id="getLogicalId" parameterType="long" resultType="long">
+        SELECT last_logical_id
+        FROM post
+        WHERE id = #{postId}
+        FOR UPDATE
+    </select>
+
+    <update id="updateLogicalId" parameterType="long">
+        UPDATE post
+        SET last_logical_id = #{last_logical_id}
+        WHERE id = #{postId}
+    </update>
+
+    <select id="getCommentPath" parameterType="long" resultType="String">
+        SELECT comment_path
+        FROM comment
+        WHERE post_id = #{postId}
+        AND id = #{parentId}
+    </select>
+
+    <insert id="createParentComment" parameterType="map">
+        INSERT INTO comment (member_id, post_id,logical_id, comment_path,comment_content, create_at)
+        VALUES (#{createCommentRequest.memberId}, #{postId},#{last_logical_id}, #{last_logical_id}, #{createCommentRequest.commentContent}, now());
+    </insert>
+
+    <insert id="createChildComment" parameterType="map">
+        INSERT INTO comment (member_id, post_id, parent_id, logical_id, comment_path, comment_content, create_at)
+        VALUES (#{createCommentRequest.memberId}, #{postId}, #{createCommentRequest.parentId},#{last_logical_id}, #{commentPath}, #{createCommentRequest.commentContent}, now());
+    </insert>
+
+
 
 </mapper>

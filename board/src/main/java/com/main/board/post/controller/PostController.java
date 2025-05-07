@@ -72,6 +72,14 @@ public class PostController {
     }
     //  join 방식 끝
 
+    // v2방식 join과 비교하기
+    @GetMapping("/findAllComment/{commentId}")
+    public List<MoreCommentResponse> findAllComment(@PathVariable long commentId,
+                                                    @RequestParam(required = false, defaultValue = "0") int page) {
+        long offset = PostUtilMethod.calculateOffsetAndCheckPage(page);
+        return postService.findAllComment(commentId, offset);
+    }
+
     //recursive 방식
     @GetMapping("recursive/{postId}")
     public PostDetailResponse getRecursivePostDetail(@PathVariable long postId,
@@ -113,4 +121,12 @@ public class PostController {
         return ResponseEntity.status(HttpStatus.OK).body("게시물이 성공적으로 삭제되었습니다!");
     }
 
+
+    //댓글 생성
+    @PostMapping("/createcomment/{postId}")
+    public ResponseEntity<String> createComment(
+            @RequestBody @Valid CreateCommentRequest createCommentRequest, @PathVariable Long postId) {
+        postService.createComment(createCommentRequest, postId);
+        return ResponseEntity.status(HttpStatus.CREATED).body("댓글이 성공적으로 생성되었습니다!");
+    }
 }
