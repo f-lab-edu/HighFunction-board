@@ -14,18 +14,12 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Controller
-@RequestMapping("/mainBoard")
 public class MainBoardController {
 
     private final MainBoardService mainBoardService;
 
-    @GetMapping("/main")
+    @GetMapping("/")
     public String showBoard(Model model) {
-        //Request안에서 상수화
-        List<MainBoardPostResponse> posts = mainBoardService.getMainBoardForCursor(CursorRequest.defaultDesc());
-        // 상수클래스로 관리
-        // List<MainBoardPostResponse> posts2 = mainBoardService.getMainBoardForCursor(MainBoardConstants.DEFAULT_DESC);
-        model.addAttribute("posts", posts);
         return "index"; // templates/index.html 열림
     }
 }
