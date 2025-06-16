@@ -191,6 +191,48 @@ public class PostService {
     }
     //recursive 방식 끝
 
+    public List<MoreCommentResponse> findAllComment(long commentId, long offset) {
+        // 1. 부모댓글의 path값 가져오기
+        long parentPath = postRepository.getPathByCommentId(commentId);
+        // 2. postId 가져오기
+        long postId = postRepository.findByPostId(commentId);
+        //3. 부모댓글의 path값을 통해 자식 댓글 가져오기
+        List<CommentDetailFromDB> commentList = postRepository.findAllComment(parentPath, postId, offset);
+
+        Map<Long, CommentDetailFromDB> commentMap = new HashMap<>();
+
+        //1. 반환 객체 생성
+        List<MoreCommentResponse> moreCommentResponseList = new ArrayList<>();
+
+        for(CommentDetailFromDB comment : commentList) {
+            commentMap.put(comment.getCommentId(), comment);
+        }
+
+        //5. 대댓글 데이터를 계층화
+        for(CommentDetailFromDB comment : commentList) {
+            // 5-1. 부모 댓글이 있는 경우
+            if(comment.getParentId() != null) {
+                // 5-1-1.Map에서 해당 부모 댓글을 찾아 변수에 담아준다
+                CommentDetailFromDB parent = commentMap.get(comment.getParentId());
+                // 5-1-2. 부모 댓글이 null이 아닌 경우
+                if(parent != null) {
+                    // 5-1-3. 부모 댓글의 자식 댓글 리스트에 현재 댓글을 추가
+                    parent.getChildCommentList().add(comment);
+                }
+                // 5-1-4. 부모 댓글(map에서꺼낸 parent)가 null인 경우 comment데이터가 최상위 부모이기에 반환리스트에 추가
+                else {
+                    MoreCommentResponse convertingData = new MoreCommentConverter(comment).toObject();
+                    moreCommentResponseList.add(convertingData);
+                }
+                // 5-1-2. 부모댓글이 없는경우 이역시도 최상위 부모이기에 반환리스트에 추가
+            } else {
+                MoreCommentResponse convertingData = new MoreCommentConverter(comment).toObject();
+                moreCommentResponseList.add(convertingData);
+            }
+        }
+        return moreCommentResponseList;
+    }
+
 
     @Transactional
     public void createPost(CreatePostRequest createPostRequest) {
@@ -245,5 +287,24 @@ public class PostService {
             throw new IllegalArgumentException("게시물 작성자가 아닙니다.");
         }
         postRepository.deletePost(postId);
+    }
+
+    @Transactional
+    public void createComment(CreateCommentRequest createCommentRequest, long postId) {
+        //1. logicalId 가져오기 (인덱스걸려있는 id에 FOR UPDATE)
+        long last_logical_id = postRepository.getLogicalId(postId) + 1;
+        //2. 게시글에 logical_Id세팅
+        postRepository.updateLogicalId(postId, last_logical_id);
+
+        //2. 원댓글인지 대댓글인지 확인
+        if(createCommentRequest.getParentId() == null) {
+            //3. 원댓글인 경우
+            postRepository.createParentComment(createCommentRequest, last_logical_id, postId);
+        } else {
+            //4. 대댓글인 경우 상위 뎁스 조회
+            String comment_content = postRepository.getCommentPath(postId, createCommentRequest.getParentId()) +"/" + last_logical_id ;
+            postRepository.createChildComment(createCommentRequest, last_logical_id, postId, comment_content);
+        }
+
     }
 }
