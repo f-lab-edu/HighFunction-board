@@ -1,3 +1,10 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+# This workflow will build a package using Gradle and then publish it to GitHub packages when a release is created
+# For more information see: https://github.com/actions/setup-java/blob/main/docs/advanced-usage.md#Publishing-using-gradle
+
 name: HighFunction CI/CD
 
 on:
@@ -7,54 +14,34 @@ on:
 
 jobs:
   build:
+
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+    - uses: actions/checkout@v4
 
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
-        with:
-          java-version: '17'
-          distribution: 'temurin'
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
 
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
 
-      - name: Grant execute permission for gradlew
-        run: chmod +x ./board/gradlew
+    - name: Grant execute permission for gradlew
+      run: chmod +x ./board/gradlew
 
-      - name: Build with Gradle
-        env:
-          DB_URL: ${{ secrets.DB_URL }}
-          DB_USERNAME: ${{ secrets.DB_USERNAME }}
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-        run: |
-          echo ">> DB_URL=$DB_URL"
-          echo ">> DB_USERNAME=$DB_USERNAME"
-          echo ">> DB_PASSWORD=$DB_PASSWORD"
-          cd board
-          chmod +x ./gradlew
-          ./gradlew build \
-            -DDB_URL="$DB_URL" \
-            -DDB_USERNAME="$DB_USERNAME" \
-            -DDB_PASSWORD="$DB_PASSWORD"
+    - name: Build with Gradle
+      run: |
+            cd board
+            chmod +x ./gradlew
+            ./gradlew build
 
-      - name: Deploy to NCP Server
-        env:
-          DB_URL: ${{ secrets.DB_URL }}
-          DB_USERNAME: ${{ secrets.DB_USERNAME }}
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          SERVER_PASSWORD: ${{ secrets.SERVER_PASSWORD }}
-        run: |
-          sudo apt-get install -y sshpass
-
-          sshpass -p "$SERVER_PASSWORD" scp -o StrictHostKeyChecking=no board/build/libs/board-0.0.1-SNAPSHOT.jar root@175.45.192.108:/java
-
-          sshpass -p "$SERVER_PASSWORD" ssh -o StrictHostKeyChecking=no root@175.45.192.108 '
-            nohup java \
-              -Dfile.encoding=UTF-8 \
-              -DDB_URL="${DB_URL}" \
-              -DDB_USERNAME="${DB_USERNAME}" \
-              -DDB_PASSWORD="${DB_PASSWORD}" \
-              -jar /java/board-0.0.1-SNAPSHOT.jar > /java/board.log 2>&1 &'
+    - name: Deploy to NCP Server # 서버 알고리즘 변경 필요 # 서버에는 공개키 등록하기
+      run: |
+        sudo apt-get install -y sshpass
+        
+        sshpass -p "${{ secrets.SERVER_PASSWORD }}" scp -o StrictHostKeyChecking=no board/build/libs/board-0.0.1-SNAPSHOT.jar root@175.45.192.108:/java
+        
+        sshpass -p "${{ secrets.SERVER_PASSWORD }}" ssh -o StrictHostKeyChecking=no root@175.45.192.108 'nohup java -Dfile.encoding=UTF-8 -jar /java/board-0.0.1-SNAPSHOT.jar > /java/board.log 2>&1 &'
