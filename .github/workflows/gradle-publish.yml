@@ -33,14 +33,7 @@ jobs:
       run: chmod +x ./board/gradlew
 
     - name: Build with Gradle
-      env:
-        DB_URL: ${{ secrets.DB_URL }}
-        DB_USERNAME: ${{ secrets.DB_USERNAME }}
-        DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
       run: |
-            echo ">> DB_URL=$DB_URL"
-            echo ">> DB_USERNAME=$DB_USERNAME"
-            echo ">> DB_PASSWORD=$DB_PASSWORD"
             cd board
             chmod +x ./gradlew
             ./gradlew build
