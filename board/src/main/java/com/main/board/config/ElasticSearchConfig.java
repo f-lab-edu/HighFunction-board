@@ -5,11 +5,13 @@ import co.elastic.clients.json.jackson.JacksonJsonpMapper;
 import co.elastic.clients.transport.rest_client.RestClientTransport;
 import org.apache.http.HttpHost;
 import org.elasticsearch.client.RestClient;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class ElasticSearchConfig {
 
+    @Bean
     public static ElasticsearchClient createClient() {
         RestClient restClient = RestClient.builder(
                 new HttpHost("localhost", 9200) //같은서버에 Elasticsearch가 설치되어있다면 localhost:9200
